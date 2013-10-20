@@ -3,6 +3,8 @@
 #################
 # Data is too big, cannot commit to github
 raw_data/
+# Just a temp folder
+temp/
 
 #################
 ## Eclipse
@@ -219,3 +221,4 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+.Rproj.user
