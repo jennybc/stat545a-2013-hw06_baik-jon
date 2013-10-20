@@ -1,4 +1,10 @@
 #################
+## My ignores
+#################
+# Data is too big, cannot commit to github
+raw_data/
+
+#################
 ## Eclipse
 #################
 
