@@ -89,9 +89,18 @@ summary(ptDat$offence_id)
 ptDat <- subset(ptDat, select=-c(record_id, make_id, offence_id))
 
 # What is details?
+summary(ptDat$details)
+unique(ptDat$detailsm, na.rm=TRUE)
+# Well, we can drop this column as well. There is nothing of interest!
+ptDat <- subset(ptDat, select=-details)
 
-
+# Our "cleaned" data set.
 names(ptDat)
+
+# Save it! Save it as a csv file and a rds file.
+dir.
+saveRDS(ptDat, "data_02_clean/parkingtickets_clean.rds")
+write.csv(ptDat, "data_02_clean/parkingtickets_clean.csv", row.names=FALSE)
 
 # OK! Now lets do some data munging
 
