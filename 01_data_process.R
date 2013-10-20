@@ -1,12 +1,13 @@
 #####
-# Data processing step.
-# We will be doing the data aggregation steps in this script.
+# Data cleaning step.
+# Some light data cleaning: Remove unwanted columns, make sure the columns
+# are the right types.
 #####
 
 
 # Set up ------------------------------------------------------------------
 
-# To work with dates in R
+# To help us work with dates in R.
 # install.packages("lubridate")
 library(lubridate)
 
@@ -94,14 +95,46 @@ unique(ptDat$detailsm, na.rm=TRUE)
 # Well, we can drop this column as well. There is nothing of interest!
 ptDat <- subset(ptDat, select=-details)
 
+
+# Fix the factor levels
+ptDat$offence_denorm <- factor(ptDat$offence_denorm,
+                               levels=names(sort(table(ptDat$offence_denorm),
+                                                 decreasing=FALSE)))
+ptDat$make_denorm <- factor(ptDat$make_denorm,
+                            levels=names(sort(table(ptDat$make_denorm),
+                                              decreasing=FALSE)))
+
+# Some very rare appearances. Let us make a new category that groups makes of cars
+# that appear 10 or less times
+summary(ptDat$make_denorm)
+
+tab.make <- table(ptDat$make_denorm)
+
+make2 <- factor(ptDat$make_denorm,
+                levels=c("Other",
+                         names(tab.make)[-which(tab.make <= 10)]))
+
+summary(make2)
+make2[is.na(make2)] <- "Other"
+summary(make2)
+
+# Add to data frame
+ptDat$make_denorm2 <- make2
+rm(make2)
+rm(tab.make)
+
+# Add "Year", "Month", "Day", "Hour" variables to our data set
+ptDat$year <- year(ptDat$date)
+ptDat$month <- month(ptDat$date)
+ptDat$day <- day(ptDat$date)
+ptDat$hour <- hour(ptDat$datetime)
+
 # Our "cleaned" data set.
 names(ptDat)
 
 # Save it! Save it as a csv file and a rds file.
-dir.
+dir.create("data_02_clean")
 saveRDS(ptDat, "data_02_clean/parkingtickets_clean.rds")
 write.csv(ptDat, "data_02_clean/parkingtickets_clean.csv", row.names=FALSE)
 
-# OK! Now lets do some data munging
-
-# Data munging begins.. ---------------------------------------------------
+# OK! Now lets do some exploring (in the next script)
