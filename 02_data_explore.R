@@ -71,28 +71,60 @@ ggplot(data=ptDat) +
   coord_flip()
 
 # 04
-# How has the number of tickets been per year in our data? Per month?
+# How has the number of tickets been per year in our data? Per month? Per day of week?
 names(ptDat)
-ptDatYear <- table(year(ptDat$date))
-# Make into data frame for plotting
-ptDatYear <- data.frame(ptDatYear)
-names(ptDatYear) <- c("year", "freq")
+ptDatYear <- ddply(ptDat, ~year, summarize, freq=length(year))
 
 # Plot bar chart
 ggplot(data=ptDatYear) +
-  geom_bar(aes(x=year, y=freq), stat="identity")
+  geom_bar(aes(x=as.factor(year), y=freq), stat="identity")
 # Note that the data for 2008 goes from Jan 1 ~ Sept 25
 
 # Now for month
-ptDatMonth <- table(month(ptDat$date))
-# Make into data frame for plotting
-ptDatMonth <- data.frame(ptDatMonth)
-names(ptDatMonth) <- c("month", "freq")
+ptDatMonth <- ddply(ptDat, ~month, summarize, freq=length(month))
 
 # Plot bar chart
 ggplot(data=ptDatMonth) + 
-  geom_bar(aes(x=month, y=freq), stat="identity")
+  geom_bar(aes(x=as.factor(month), y=freq), stat="identity")
 
 # Try by year and month
-ptDatYearMonth <- ddply(ptDat, ~year(date)+month(date),
-                        freq=length(plate))
+ptDatYearMonth <- ddply(ptDat, ~year+month, summarize,
+                        freq=length(year))
+
+# Plot bars
+ggplot(data=ptDatYearMonth) +
+  geom_bar(aes(x=as.factor(month), y=freq), stat="identity") +
+  facet_wrap(~year)
+# Plot lines
+ggplot(data=ptDatYearMonth) +
+  geom_path(aes(x=month, y=freq)) +
+  facet_wrap(~year)
+
+# How about parking tickets by day of the week?
+# Lets reverse the factor order first to make it look nice when we flip
+ptDat$wday <- factor(ptDat$wday,
+                     levels=rev(levels(ptDat$wday)))
+
+ggplot(data=ptDat) +
+  geom_bar(aes(x=wday)) +
+  coord_flip()
+
+# By month?
+ggplot(data=ptDat) + 
+  geom_bar(aes(x=wday)) +
+  facet_wrap(~month) +
+  coord_flip()
+
+# By year?
+ggplot(data=ptDat) + 
+  geom_bar(aes(x=wday)) +
+  facet_wrap(~year) + 
+  coord_flip()
+
+# Year and month?
+ggplot(data=ptDat) + 
+  geom_bar(aes(x=wday)) +
+  facet_grid(year~month) +
+  coord_flip()
+
+# How about holidays?

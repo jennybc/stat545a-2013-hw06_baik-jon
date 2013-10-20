@@ -123,11 +123,15 @@ ptDat$make_denorm2 <- make2
 rm(make2)
 rm(tab.make)
 
-# Add "Year", "Month", "Day", "Hour" variables to our data set
+# Add "Year", "Month", "Day", "Day of Week", "Hour" variables to our data set
 ptDat$year <- year(ptDat$date)
 ptDat$month <- month(ptDat$date)
 ptDat$day <- day(ptDat$date)
+ptDat$wday <- factor(weekdays(ptDat$date),
+                     levels=c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                              "Thursday", "Friday", "Saturday"))
 ptDat$hour <- hour(ptDat$datetime)
+
 
 # Our "cleaned" data set.
 names(ptDat)
