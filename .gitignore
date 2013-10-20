@@ -2,7 +2,10 @@
 ## My ignores
 #################
 # Data is too big, cannot commit to github
-raw_data/
+data_01_raw/*.csv
+data_01_raw/*.sql
+data_02_clean/parkingtickets_clean.csv
+
 # Just a temp folder
 temp/
 # This csv file is much too big to commit to github
