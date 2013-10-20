@@ -1,0 +1,2 @@
+"id","username","first_name","last_name","email","password","is_staff","is_active","is_superuser","last_login","date_joined"
+1,"admin","","","davidgrant@gmail.com","sha1$e7d79$0dbe77697fb953d271ab08c890ccfdef95647286",1,1,1,"2011-01-15 22:52:40","2011-01-15 22:52:27"

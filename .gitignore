@@ -5,6 +5,8 @@
 raw_data/
 # Just a temp folder
 temp/
+# This csv file is much too big to commit to github
+data/parkingtickets_ticket.csv
 
 #################
 ## Eclipse
