@@ -12,6 +12,9 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ```
 2013-10-21 12:00 PM:
   Initial hand in version.
+  
+2013-10-21 02:00 PM:
+  Fixed some plots, added colour to existing plots.
 ```
 
 ## Contents
@@ -23,7 +26,6 @@ Avoiding Parking Tickets in Vancouver, B.C.
 * Aren't the Holidays Nice?
 * Repeat Offenders
 * Most Ticketed Locations
-* Conclusions
 
 ```{r setup, echo=FALSE}
 # Set up
@@ -35,7 +37,7 @@ library(ggplot2)
 library(scales)
 
 # Global knitr options
-opts_knit$set(cache=TRUE)
+opts_knit$set(cache=FALSE)
 ```
 
 ## The Data
@@ -96,6 +98,12 @@ print.xtable(tab1x, type="html", include.rownames=TRUE)
 ```
 
 It seems the number one reason for receiving parking tickets in Vancouver is from expired parking meters. The next two most common reasons for receiving a parking tickets seem to arise from drivers wanting to avoid parking meters all together. Drivers that park their cars in a "No Stopping Zone" and drivers that parked in other people's permit/residential accounted for more than a quarter of the parking tickets in the data set. I guess that goes to show that you should always be mindful of how much money you put into the meter, and if you run out of change, you best not push your luck!
+
+Let's check out the frequency of each othe offences by month over the time period of our data.
+
+<img src="../figures/01_offence-freq-byYM.svg"  style="width: 1000px;"/>
+
+It appears that the monthly number of tickets issued for each offence is quite stable. There is no immediate trend present in the plot. However, we see some unusual activity around August, 2007 there is a sharp decline in the number of tickets issued in Vancouver, but quickly recovers to "normal" levels in a couple of months. I wonder if there was a strike during that time period?
 
 ## Types of Cars that Were Ticketed
 
@@ -168,6 +176,8 @@ Perhaps the time when we should be most mindful of our vehicles is around 3:00 P
 Now, we take a look at the proportion of tickets given out during a specific time given the offence. It appears that different offences have different peak times of getting caught. In particular, we have a very strange distribution for the "No Stopping" offence - 3:00 PM is the peak time for giving out tickets for parking or stopping in a "No Stopping" zone.
 
 <img src="../figures/10_hour-offenses-prop.svg" style="width: 1000px;"/>
+
+> Sorry for the rotated x-axis labels. The labels would overlap otherwise!
 
 We zoom in to the "No Stopping" plot from the above plot.
 

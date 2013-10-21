@@ -2,7 +2,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ========================================================
 ### Jonathan Baik
 ### STAT 545A Homework 6
-### Oct 21 2013 11:55:57
+### Oct 21 2013 1:51:52 PM
 <hr>
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)
@@ -12,6 +12,9 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ```
 2013-10-21 12:00 PM:
   Initial hand in version.
+  
+2013-10-21 02:00 PM:
+  Fixed some plots, added colour to existing plots.
 ```
 
 ## Contents
@@ -23,7 +26,6 @@ Avoiding Parking Tickets in Vancouver, B.C.
 * Aren't the Holidays Nice?
 * Repeat Offenders
 * Most Ticketed Locations
-* Conclusions
 
 
 
@@ -67,7 +69,7 @@ dim(ptDat)
 ```
 
 ```
-## [1] 1631387       9
+## [1] 1631387      17
 ```
 
 ```r
@@ -76,16 +78,24 @@ str(ptDat)
 ```
 
 ```
-## 'data.frame':	1631387 obs. of  9 variables:
+## 'data.frame':	1631387 obs. of  17 variables:
 ##  $ datetime      : POSIXct, format: "2004-01-02 07:08:00" "2004-01-02 07:09:00" ...
 ##  $ date          : POSIXct, format: "2004-01-02" "2004-01-02" ...
 ##  $ time          : chr  "07:08:00" "07:09:00" "07:11:00" "07:14:00" ...
 ##  $ plate         : chr  "661DEL" "A87433E" "061JJK" "NJR688" ...
-##  $ make_denorm   : Factor w/ 115 levels "ACURA","ALFA ROMEO",..: 10 34 10 78 34 87 20 61 43 86 ...
+##  $ make_denorm   : Factor w/ 115 levels "DELOREAN","EDSEL",..: 107 113 107 108 113 102 112 95 114 97 ...
 ##  $ address       : chr  "1250 Broadway St. W." "1450 Davie St." "1350 Davie St." "1650 Davie St." ...
 ##  $ street_num    : int  1250 1450 1350 1650 850 650 1650 1350 1350 1550 ...
 ##  $ street_name   : chr  "Broadway St. W." "Davie St." "Davie St." "Davie St." ...
-##  $ offence_denorm: Factor w/ 16 levels "Exceed time limit for free parking",..: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ offence_denorm: Factor w/ 16 levels "Park too far away from curb",..: 15 15 15 15 15 15 15 15 15 15 ...
+##  $ make_denorm2  : Factor w/ 80 levels "Other","AUSTIN",..: 72 78 72 73 78 67 77 60 79 62 ...
+##  $ year          : num  2004 2004 2004 2004 2004 ...
+##  $ month         : num  1 1 1 1 1 1 1 1 1 1 ...
+##  $ day           : int  2 2 2 2 2 2 2 2 2 2 ...
+##  $ wday          : Ord.factor w/ 7 levels "Sunday"<"Monday"<..: 6 6 6 6 6 6 6 6 6 6 ...
+##  $ hour          : int  7 7 7 7 7 7 7 7 7 7 ...
+##  $ holiday       : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  $ holiday_name  : Factor w/ 9 levels "New Years","Good Friday",..: NA NA NA NA NA NA NA NA NA NA ...
 ```
 
 ```r
@@ -94,9 +104,11 @@ names(ptDat)
 ```
 
 ```
-## [1] "datetime"       "date"           "time"           "plate"         
-## [5] "make_denorm"    "address"        "street_num"     "street_name"   
-## [9] "offence_denorm"
+##  [1] "datetime"       "date"           "time"           "plate"         
+##  [5] "make_denorm"    "address"        "street_num"     "street_name"   
+##  [9] "offence_denorm" "make_denorm2"   "year"           "month"         
+## [13] "day"            "wday"           "hour"           "holiday"       
+## [17] "holiday_name"
 ```
 
 
@@ -106,30 +118,36 @@ We begin the data analysis by first examining the different types of parking tic
 
 <img src="../figures/01_offence-freq.svg"  style="width: 1000px;"/>
 
-<!-- html table generated in R 3.0.1 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 11:56:23 2013 -->
+<!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
+<!-- Mon Oct 21 13:51:57 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Count </TH> <TH> Proportion </TH>  </TR>
+  <TR> <TD align="right"> Expired Meter </TD> <TD align="right"> 737313 </TD> <TD align="right"> 0.4520 </TD> </TR>
+  <TR> <TD align="right"> No Stopping </TD> <TD align="right"> 321845 </TD> <TD align="right"> 0.1973 </TD> </TR>
+  <TR> <TD align="right"> Permit/Residential Parking </TD> <TD align="right"> 119130 </TD> <TD align="right"> 0.0730 </TD> </TR>
+  <TR> <TD align="right"> Exceed time limit for free parking </TD> <TD align="right"> 98167 </TD> <TD align="right"> 0.0602 </TD> </TR>
+  <TR> <TD align="right"> Other </TD> <TD align="right"> 59518 </TD> <TD align="right"> 0.0365 </TD> </TR>
+  <TR> <TD align="right"> Stop in a commercial loading zone </TD> <TD align="right"> 52888 </TD> <TD align="right"> 0.0324 </TD> </TR>
+  <TR> <TD align="right"> Stop in a bus zone </TD> <TD align="right"> 49637 </TD> <TD align="right"> 0.0304 </TD> </TR>
+  <TR> <TD align="right"> Stop in a commercial lane </TD> <TD align="right"> 46921 </TD> <TD align="right"> 0.0288 </TD> </TR>
   <TR> <TD align="right"> Stop too close to an intersection </TD> <TD align="right"> 43064 </TD> <TD align="right"> 0.0264 </TD> </TR>
+  <TR> <TD align="right"> Stop too close to a crossing </TD> <TD align="right"> 22309 </TD> <TD align="right"> 0.0137 </TD> </TR>
   <TR> <TD align="right"> Stop too close to a stop sign </TD> <TD align="right"> 19066 </TD> <TD align="right"> 0.0117 </TD> </TR>
   <TR> <TD align="right"> Stop too close to a fire hydrant </TD> <TD align="right"> 15334 </TD> <TD align="right"> 0.0094 </TD> </TR>
-  <TR> <TD align="right"> Stop too close to a crossing </TD> <TD align="right"> 22309 </TD> <TD align="right"> 0.0137 </TD> </TR>
   <TR> <TD align="right"> Stop or park facing the wrong way </TD> <TD align="right"> 14014 </TD> <TD align="right"> 0.0086 </TD> </TR>
   <TR> <TD align="right"> Stop in area reserved for certain vehicles </TD> <TD align="right"> 10972 </TD> <TD align="right"> 0.0067 </TD> </TR>
-  <TR> <TD align="right"> Stop in a commercial loading zone </TD> <TD align="right"> 52888 </TD> <TD align="right"> 0.0324 </TD> </TR>
-  <TR> <TD align="right"> Stop in a commercial lane </TD> <TD align="right"> 46921 </TD> <TD align="right"> 0.0288 </TD> </TR>
-  <TR> <TD align="right"> Stop in a bus zone </TD> <TD align="right"> 49637 </TD> <TD align="right"> 0.0304 </TD> </TR>
-  <TR> <TD align="right"> Permit/Residential Parking </TD> <TD align="right"> 119130 </TD> <TD align="right"> 0.0730 </TD> </TR>
-  <TR> <TD align="right"> Park too far away from curb </TD> <TD align="right"> 10325 </TD> <TD align="right"> 0.0063 </TD> </TR>
   <TR> <TD align="right"> Park in a no-parking zone </TD> <TD align="right"> 10884 </TD> <TD align="right"> 0.0067 </TD> </TR>
-  <TR> <TD align="right"> Other </TD> <TD align="right"> 59518 </TD> <TD align="right"> 0.0365 </TD> </TR>
-  <TR> <TD align="right"> No Stopping </TD> <TD align="right"> 321845 </TD> <TD align="right"> 0.1973 </TD> </TR>
-  <TR> <TD align="right"> Expired Meter </TD> <TD align="right"> 737313 </TD> <TD align="right"> 0.4520 </TD> </TR>
-  <TR> <TD align="right"> Exceed time limit for free parking </TD> <TD align="right"> 98167 </TD> <TD align="right"> 0.0602 </TD> </TR>
+  <TR> <TD align="right"> Park too far away from curb </TD> <TD align="right"> 10325 </TD> <TD align="right"> 0.0063 </TD> </TR>
    </TABLE>
 
 
 It seems the number one reason for receiving parking tickets in Vancouver is from expired parking meters. The next two most common reasons for receiving a parking tickets seem to arise from drivers wanting to avoid parking meters all together. Drivers that park their cars in a "No Stopping Zone" and drivers that parked in other people's permit/residential accounted for more than a quarter of the parking tickets in the data set. I guess that goes to show that you should always be mindful of how much money you put into the meter, and if you run out of change, you best not push your luck!
+
+Let's check out the frequency of each othe offences by month over the time period of our data.
+
+<img src="../figures/01_offence-freq-byYM.svg"  style="width: 1000px;"/>
+
+It appears that the monthly number of tickets issued for each offence is quite stable. There is no immediate trend present in the plot. However, we see some unusual activity around August, 2007 there is a sharp decline in the number of tickets issued in Vancouver, but quickly recovers to "normal" levels in a couple of months. I wonder if there was a strike during that time period?
 
 ## Types of Cars that Were Ticketed
 
@@ -203,6 +221,8 @@ Now, we take a look at the proportion of tickets given out during a specific tim
 
 <img src="../figures/10_hour-offenses-prop.svg" style="width: 1000px;"/>
 
+> Sorry for the rotated x-axis labels. The labels would overlap otherwise!
+
 We zoom in to the "No Stopping" plot from the above plot.
 
 <img src="../figures/10_hour-offenses-noStop.svg" style="width: 800px;"/>
@@ -229,8 +249,8 @@ If we take a histogram of the number of parking tickets issued to each license p
 
 The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 50 offenders in the table below.
 
-<!-- html table generated in R 3.0.1 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 11:56:25 2013 -->
+<!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
+<!-- Mon Oct 21 13:51:57 2013 -->
 <TABLE border=1>
 <TR> <TH> Plate </TH> <TH> Make </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 0287GE </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 362 </TD> </TR>
@@ -292,8 +312,8 @@ There is a handful of people who accrue a lot of fines from parking tickets. If 
 
 Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver.
 
-<!-- html table generated in R 3.0.1 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 11:56:41 2013 -->
+<!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
+<!-- Mon Oct 21 13:52:07 2013 -->
 <TABLE border=1>
 <TR> <TH> Address </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 1050 Robson St. </TD> <TD align="right"> 17899 </TD> </TR>

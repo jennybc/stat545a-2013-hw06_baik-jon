@@ -27,16 +27,6 @@ if(!require(ggmap)) {
 
 
 # Map Time! ---------------------------------------------------------------
-tmp <- data.frame(address=unique(ptDat$address),
-                  city="Vancouver",
-                  province="BC",
-                  country="Canada")
-write.csv(tmp, "data_03_maps/unique_addresses.csv", row.names=FALSE)
-
-# 01 - Testing ------------------------------------------------------------
-
-length(unique(ptDat$address))
-unique_address <- paste0(unique(ptDat$address), ", Vancouver, BC, Canada")
 dir.create("data_03_maps")
 
 # Save the addresses so we can download the geo-codes (takes a day!)

@@ -48,9 +48,9 @@ if(!require(scales)) {
 
 # Read in the data
 ptDat <- readRDS("data_02_clean/parkingtickets_clean.rds")
-dim(ptDat)
-str(ptDat)
-names(ptDat)
+# dim(ptDat)
+# str(ptDat)
+# names(ptDat)
 
 # For saving image files
 ggsave2 <- function(name, plot, width, height) {
@@ -81,25 +81,38 @@ gg1 <- ggplot(data=ptDat) +
 # Save figures
 ggsave2("01_offence-freq", gg1, 10, 5)
 
+# Rev factors again
+if(levels(ptDat$offence_denorm)[1]!="Expired Meter") {
+  ptDat$offence_denorm <- factor(ptDat$offence_denorm,
+                                 levels=rev(levels(ptDat$offence_denorm)))
+}
+
 # Try by year and month, by offence
 ptDatYearMonthOff <- ddply(ptDat, ~year+month+offence_denorm, summarize,
                         freq=length(year), .drop=FALSE)
-ptDatYearMonthOff$year_month <- 
+ptDatYearMonthOff$year_month <- rep(1:{12*(max(unique(ptDat$year)) + 1 +
+                                         - min(unique(ptDat$year)))}, 
+                                    each=length(unique(ptDat$offence_denorm)))
+# Get rid of empty values
+ptDatYearMonthOff <- subset(ptDatYearMonthOff, subset=!{year==2008&month>9})
+
+# Labels for x axis
+year_months <- unique(paste0(ptDatYearMonthOff$year, 
+                      sprintf("%02d", ptDatYearMonthOff$month)))
 
 # Plot paths
-gg1.5 <- ggplot(data=ptDatYearMonthOff) +
+gg1.5 <- ggplot(ptDatYearMonthOff) +
   geom_path(aes(x=year_month, y=freq, group=offence_denorm, 
                 colour=offence_denorm)) +
+  geom_point(aes(x=year_month, y=freq, colour=offence_denorm)) +
   xlab("Month") +
   ylab("Count") +
-  scale_x_continuous(breaks=1:nrow(ptDatYearMonth),
-                     labels=paste0(ptDatYearMonth$year, 
-                                   sprintf("%02d", ptDatYearMonth$month))) +
-  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1))
+  scale_x_continuous(breaks=1:length(year_months),
+                     labels=year_months) +
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1)) +
+  scale_color_discrete("Offence")
 
-ggsave2("01_offence-freq-byYM", gg1.5, 10, 4)
-
-# Offences by month??
+ggsave2("01_offence-freq-byYM", gg1.5, 12, 8)
 
 
 # OK, it looks like in our data set, the most common ticket by far is "Expired Meter".
@@ -211,7 +224,8 @@ ptDatYearMonth$year_month <- 1:nrow(ptDatYearMonth)
 
 # Plot bars
 gg8 <- ggplot(data=ptDatYearMonth) +
-  geom_bar(aes(x=as.factor(month), y=freq), stat="identity") +
+  geom_bar(aes(x=as.factor(month), y=freq, fill=as.factor(month)), 
+           colour="black", stat="identity") +
   facet_wrap(~year) +
   ylab("Count") +
   xlab("Month")
@@ -259,6 +273,9 @@ ptDatDayOff$prop <- ptDatDayOff$sum/ptDatDayOff$total
 # Verify
 ddply(ptDatDayOff, ~offence_denorm, summarize, sum=sum(prop))
 
+# Change levels
+levels(ptDatDayOff$wday) <- str_sub(levels(ptDatDayOff$wday), 1, 3)
+
 # How about facetted by offence?
 gg10.5 <- ggplot(data=ptDatDayOff) +
   geom_bar(aes(x=wday, y=prop), stat="identity") +
@@ -268,7 +285,7 @@ gg10.5 <- ggplot(data=ptDatDayOff) +
   facet_wrap(~offence_denorm)
 
 # Save
-ggsave2("05_weekday-off-prop", gg10.5, 18, 10)
+ggsave2("05_weekday-off-prop", gg10.5, 15, 8)
 
 # By month?
 gg11 <- ggplot(data=ptDat) + 
@@ -513,7 +530,8 @@ gg15 <- ggplot(data=ptDatHourOff) +
   facet_wrap(~offence_denorm) +
   ylab("Percent of Occurrences") +
   xlab("Hour") +
-  scale_y_continuous(labels = percent_format())
+  scale_y_continuous(labels = percent_format()) +
+  theme(axis.text.x=element_text(angle=90, vjust=0))
 
 # Whoa, check it out
 gg16 <- ggplot(data=subset(ptDat, subset=offence_denorm=="No Stopping")) +
@@ -523,7 +541,7 @@ gg16 <- ggplot(data=subset(ptDat, subset=offence_denorm=="No Stopping")) +
   scale_y_continuous(labels = percent_format())
 
 # Save
-ggsave2("10_hour-offenses-prop", gg15, 18, 10)
+ggsave2("10_hour-offenses-prop", gg15, 15, 10)
 ggsave2("10_hour-offenses-noStop", gg16, 6, 4)
 
 # Colour by day of week
@@ -564,3 +582,9 @@ gg19 <- ggplot(data=ptDat) +
 ggsave2("10_hour-wday", gg19, 14, 7)
 
 # Lets go to plotting maps now!
+
+# Save the unique addresses, to convert into geocodes
+dir.create("data_03_maps")
+write.csv(unique(ptDat$address), "data_03_maps/unique_addresses.csv", 
+          row.names=FALSE)
+saveRDS(unique(ptDat$address), "data_03_maps/unique_addresses.rds")
