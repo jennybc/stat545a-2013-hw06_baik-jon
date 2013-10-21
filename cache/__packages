@@ -1,0 +1,11 @@
+base
+datasets
+ggplot2
+graphics
+grDevices
+methods
+plyr
+scales
+stats
+utils
+xtable

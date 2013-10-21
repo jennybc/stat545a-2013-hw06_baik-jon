@@ -33,7 +33,6 @@ library(plyr)
 library(xtable)
 library(ggplot2)
 library(scales)
-# library(Cairo)
 
 # Global knitr options
 opts_knit$set(cache=TRUE)

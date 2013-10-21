@@ -21,6 +21,5 @@ options(rstudio.markdownToHTML = function(inputFile, outputFile) {
      
      markdownToHTML(inputFile, outputFile, options = htmlOptions, 
                     stylesheet = pathToCSS)
- })
-
-options(rpubs.upload.method = "internal")
+ }, 
+        rpubs.upload.method = "internal")

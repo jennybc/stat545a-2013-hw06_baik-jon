@@ -382,11 +382,21 @@ ggsave2("08_holiday-vs-avgs", gg12, 8, 5)
 # 09 - Worst offenders ----------------------------------------------------
 
 # Do we have any repeat offenders?
-ptDatPlateSum <- ddply(ptDat, ~plate, summarize,
-                       sum=length(plate))
+# This takes a LONG time, only do it if the file is not there
+if(!file.exists("data_02_clean/ptDatPlateSum.rds")) {
+  ptDatPlateSum <- ddply(ptDat, ~plate, summarize,
+                         sum=length(plate))
+} else {
+  ptDatPlateSum <- readRDS("data_02_clean/ptDatPlateSum.rds")
+}
 
-ptDatPlateSumMake <- ddply(ptDat, ~plate+make_denorm, summarize,
-                        sum=length(plate))
+# Again for this file
+if(!file.exists("data_02_clean/ptDatPlateSum.rds")) {
+  ptDatPlateSumMake <- ddply(ptDat, ~plate+make_denorm, summarize,
+                             sum=length(plate))
+} else {
+  ptDatPlateSumMake <- readRDS("data_02_clean/ptDatPlateSumMake.rds")
+}
 
 dim(ptDatPlateSum)
 head(ptDatPlateSum)
