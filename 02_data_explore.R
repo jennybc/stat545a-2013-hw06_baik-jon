@@ -81,6 +81,27 @@ gg1 <- ggplot(data=ptDat) +
 # Save figures
 ggsave2("01_offence-freq", gg1, 10, 5)
 
+# Try by year and month, by offence
+ptDatYearMonthOff <- ddply(ptDat, ~year+month+offence_denorm, summarize,
+                        freq=length(year), .drop=FALSE)
+ptDatYearMonthOff$year_month <- 
+
+# Plot paths
+gg1.5 <- ggplot(data=ptDatYearMonthOff) +
+  geom_path(aes(x=year_month, y=freq, group=offence_denorm, 
+                colour=offence_denorm)) +
+  xlab("Month") +
+  ylab("Count") +
+  scale_x_continuous(breaks=1:nrow(ptDatYearMonth),
+                     labels=paste0(ptDatYearMonth$year, 
+                                   sprintf("%02d", ptDatYearMonth$month))) +
+  theme(axis.text.x=element_text(angle=45, vjust=1, hjust=1))
+
+ggsave2("01_offence-freq-byYM", gg1.5, 10, 4)
+
+# Offences by month??
+
+
 # OK, it looks like in our data set, the most common ticket by far is "Expired Meter".
 # Parking in a "No Stopping" area also has a LOT of tickets!
 
@@ -110,6 +131,11 @@ col.index <- ifelse(seq(col) %% 2,
                     seq(col), 
                     (seq(ceiling(length(col)/2), length.out=length(col)) %% length(col)) + 1)
 mixed <- col[col.index]
+
+# Reorder factors?
+if(levels(ptDat$offence_denorm)[1] != "Expired Meter")
+  ptDat$offence_denorm <- factor(ptDat$offence_denorm,
+                                 levels=rev(levels(ptDat$offence_denorm)))
 
 # Lets try the plot again
 gg3 <- ggplot(data=ptDat) + 
@@ -191,7 +217,7 @@ gg8 <- ggplot(data=ptDatYearMonth) +
   xlab("Month")
 
 # Save
-ggsave2("04_year-month-total", gg8, 6, 4)
+ggsave2("04_year-month-total", gg8, 8, 4)
 
 # Plot lines
 gg9 <- ggplot(data=ptDatYearMonth) +
@@ -221,6 +247,28 @@ gg10 <- ggplot(data=ptDat) +
 
 # Save
 ggsave2("05_weekday-bar", gg10, 6, 4)
+
+# Lets get the proportions instead
+ptDatHourOffTot <- ddply(ptDat, ~offence_denorm, summarize,
+                         sum=length(offence_denorm))
+ptDatDayOff <- ddply(ptDat, ~wday+offence_denorm, summarize,
+                      sum=length(offence_denorm), .drop=FALSE)
+ptDatDayOff$total <- ptDatHourOffTot$sum
+ptDatDayOff$prop <- ptDatDayOff$sum/ptDatDayOff$total
+
+# Verify
+ddply(ptDatDayOff, ~offence_denorm, summarize, sum=sum(prop))
+
+# How about facetted by offence?
+gg10.5 <- ggplot(data=ptDatDayOff) +
+  geom_bar(aes(x=wday, y=prop), stat="identity") +
+  #   coord_flip() + 
+  ylab("Count") +
+  xlab("Day of Week") +
+  facet_wrap(~offence_denorm)
+
+# Save
+ggsave2("05_weekday-off-prop", gg10.5, 18, 10)
 
 # By month?
 gg11 <- ggplot(data=ptDat) + 
@@ -293,26 +341,34 @@ ptDatMeanWeekday <- ddply(ptDat, ~wday, summarize,
                           mean=length(date)/length(unique(date)))
 
 # Looks like the old plot, eh?
-ptDatMeanWeekday$wday <- factor(ptDatMeanWeekday$wday,
-                                levels=rev(levels(ptDatMeanWeekday$wday)))
+# if(levels(ptDatMeanWeekday$wday)[1]=="Sunday")
+#   ptDatMeanWeekday$wday <- factor(ptDatMeanWeekday$wday,
+#                                   levels=rev(levels(ptDatMeanWeekday$wday)))
 
-ggplot(data=ptDatMeanWeekday) +
-  geom_bar(aes(x=wday, y=mean), stat='identity')
+# ggplot(data=ptDatMeanWeekday) +
+#   geom_bar(aes(x=wday, y=mean), stat='identity')
 
 # 08 - How do holidays compare to overall means? --------------------------
 
 # Do the same plot as above, but this time add lines for overall mean, weekday mean, 
 # weekend mean
+if(levels(ptDat$holiday_name)[1]=="New Years") 
+  ptDat$holiday_name <- factor(ptDat$holiday_name,
+                               levels=rev(levels(ptDat$holiday_name)))
+
 gg12 <- ggplot(data=subset(ptDat, subset=!is.na(holiday_name))) +
   geom_bar(aes(x=holiday_name, y=..count..)) +
   geom_hline(aes(yintercept=value, colour=type), 
              linetype="dashed", data=ptDatMeans) +
   scale_colour_manual(guide='legend',
-                      values=c("black", "blue", "red"),
-                      labels=c("Overall", "Weekday", "Weekend")) +
+#                       breaks=c("overall_mean", "weekday_mean", "weekend_mean"),
+                      values=c("black", "red", "blue"),
+                      labels=c("Overall", "Weekend", "Weekday")) +
   facet_wrap(~year) + 
   ylim(0, 1100) +
-  coord_flip()
+  coord_flip() +
+  xlab("Holiday") +
+  ylab("Count")
 # Since the legend isn't working properly,
 # Black is Overall
 # Blue is Weekday
@@ -329,17 +385,26 @@ ggsave2("08_holiday-vs-avgs", gg12, 8, 5)
 ptDatPlateSum <- ddply(ptDat, ~plate, summarize,
                        sum=length(plate))
 
-# This took a long time, let us save this one!
-saveRDS(ptDatPlateSum, "data_02_clean/ptDatPlateSum.rds")
-write.csv(ptDatPlateSum, "data_02_clean/ptDatPlateSum.csv")
+ptDatPlateSumMake <- ddply(ptDat, ~plate+make_denorm, summarize,
+                        sum=length(plate))
 
 dim(ptDatPlateSum)
 head(ptDatPlateSum)
 
 # Use hadley's sorting function
 ptDatPlateSum <- arrange(ptDatPlateSum, desc(sum))
-head(ptDatPlateSum)
+head(ptDatPlateSum, n=100)
 # WOW! Who gets 1000 tickets??
+
+ptDatPlateSum <- arrange(ptDatPlateSumMake, desc(sum))
+head(ptDatPlateSum, n=100)
+
+# This took a long time, let us save this one!
+saveRDS(ptDatPlateSum, "data_02_clean/ptDatPlateSum.rds")
+write.csv(ptDatPlateSum, "data_02_clean/ptDatPlateSum.csv")
+
+saveRDS(ptDatPlateSumMake, "data_02_clean/ptDatPlateSumMake.rds")
+write.csv(ptDatPlateSumMake, "data_02_clean/ptDatPlateSumMake.csv")
 
 # For plotting boxplots
 ptDatPlateSum$all <- "All Plates"
@@ -386,7 +451,9 @@ platePerc <- paste0(round(sum(ptDatPlateSum$sum <=25)/nrow(ptDatPlateSum), 5) * 
 gg13 <- ggplot(ptDatPlateSum) +
   geom_histogram(aes(x=sum), binwidth=1) +
   xlim(0,25) +
-  annotate("text", x=20, y=4e+05, label=paste(platePerc, "of the data"))
+  annotate("text", x=20, y=4e+05, label=paste(platePerc, "of the data")) +
+  xlab("Number of Parking Tickets") +
+  ylab("Count")
 # 0.9969815 or about 99.698% of the data
 
 # Save
@@ -403,7 +470,7 @@ gg14 <- ggplot(data=ptDat) +
   xlab("Hour")
 
 # Save
-ggsave2("10_hour-total", gg14, 6,4)
+ggsave2("10_hour-total", gg14, 6, 4)
 
 # Re order factors for this plot
 if(levels(ptDat$offence_denorm)[1] != "Expired Meter")
@@ -446,7 +513,7 @@ gg16 <- ggplot(data=subset(ptDat, subset=offence_denorm=="No Stopping")) +
   scale_y_continuous(labels = percent_format())
 
 # Save
-ggsave2("10_hour-offenses-prop", gg15, 6, 6)
+ggsave2("10_hour-offenses-prop", gg15, 18, 10)
 ggsave2("10_hour-offenses-noStop", gg16, 6, 4)
 
 # Colour by day of week
@@ -473,6 +540,17 @@ gg18 <- ggplot(data=ptDat) +
   scale_fill_discrete("Day of Week")
 
 # By month
-ggsave2("10_hour-weekday-month-dens", gg18, 6,6)
+ggsave2("10_hour-weekday-month-dens", gg18, 6, 6)
+
+# Try facetting something else
+# Colour by day of week
+gg19 <- ggplot(data=ptDat) +
+  geom_bar(aes(x=as.factor(hour))) +
+  facet_wrap(~wday) + 
+  ylab("Count") +
+  xlab("Hour")
+
+# By month
+ggsave2("10_hour-wday", gg19, 14, 7)
 
 # Lets go to plotting maps now!

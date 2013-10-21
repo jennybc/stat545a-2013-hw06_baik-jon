@@ -13,6 +13,9 @@ temp/
 .Rhistory
 ggmapTemp.png
 
+# Report stuff
+report/cache/
+
 #################
 ## Eclipse
 #################
