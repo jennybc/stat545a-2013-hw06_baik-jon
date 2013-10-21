@@ -392,101 +392,87 @@ gg13 <- ggplot(ptDatPlateSum) +
 # Save
 ggsave2("09_plate-totals", gg13, 6, 5)
 
-# 10 - Time of offence ----------------------------------------------------
+# 10 - Time (hour) of offence ---------------------------------------------
 
 names(ptDat)
 
 # Lets see if there are particular peak hours
-ggplot(data=ptDat) +
-  geom_bar(aes(x=as.factor(hour)))
+gg14 <- ggplot(data=ptDat) +
+  geom_bar(aes(x=as.factor(hour))) +
+  ylab("Count") +
+  xlab("Hour")
+
+# Save
+ggsave2("10_hour-total", gg14, 6,4)
 
 # Re order factors for this plot
-ptDat$offence_denorm <- factor(ptDat$offence_denorm,
-                               levels=rev(levels(ptDat$offence_denorm)))
-ptDat$wday <- factor(ptDat$wday,
-                     levels=rev(levels(ptDat$wday)))
+if(levels(ptDat$offence_denorm)[1] != "Expired Meter")
+  ptDat$offence_denorm <- factor(ptDat$offence_denorm,
+                                 levels=rev(levels(ptDat$offence_denorm)))
+if(levels(ptDat$wday)[1] != "Sunday")
+  ptDat$wday <- factor(ptDat$wday,
+                       levels=rev(levels(ptDat$wday)))
 
 # Try colouring by type of offence
-ggplot(data=ptDat) +
-  geom_bar(aes(x=as.factor(hour), fill=offence_denorm))
+# ggplot(data=ptDat) +
+#   geom_bar(aes(x=as.factor(hour), y=(..count..)/sum(..count..))) +
+#   facet_wrap(~offence_denorm)
 # Ugh, hard to read
 
+# Lets get the proportions instead
+ptDatHourOffTot <- ddply(ptDat, ~offence_denorm, summarize,
+                         sum=length(offence_denorm))
+ptDatHourOff <- ddply(ptDat, ~hour+offence_denorm, summarize,
+                      sum=length(offence_denorm), .drop=FALSE)
+ptDatHourOff$total <- ptDatHourOffTot$sum
+ptDatHourOff$prop <- ptDatHourOff$sum/ptDatHourOff$total
+
+# Verify
+ddply(ptDatHourOff, ~offence_denorm, summarize, sum=sum(prop))
+
+# Now plot!
+gg15 <- ggplot(data=ptDatHourOff) +
+  geom_bar(aes(x=as.factor(hour), y=prop), stat="identity") +
+  facet_wrap(~offence_denorm) +
+  ylab("Percent of Occurrences") +
+  xlab("Hour") +
+  scale_y_continuous(labels = percent_format())
+
+# Whoa, check it out
+gg16 <- ggplot(data=subset(ptDat, subset=offence_denorm=="No Stopping")) +
+  geom_bar(aes(x=as.factor(hour), y=(..count..)/sum(..count..))) +
+  ylab("Count") +
+  xlab("Hour") +
+  scale_y_continuous(labels = percent_format())
+
+# Save
+ggsave2("10_hour-offenses-prop", gg15, 6, 6)
+ggsave2("10_hour-offenses-noStop", gg16, 6, 4)
+
 # Colour by day of week
-ggplot(data=ptDat) +
-  geom_bar(aes(x=as.factor(hour), fill=wday))
+gg17 <- ggplot(data=ptDat) +
+  geom_density(aes(x=hour, fill=wday), position="stack", adjust=2.5) +
+  ylab("Density") +
+  xlab("Hour") + 
+  scale_fill_discrete("Day of Week")
+
+ggsave2("10_hour-weekday-dens", gg17, 6,5)
 
 # How about we get the proportions
-ggplot(data=ptDat) +
-  geom_bar(aes(x=as.factor(hour), fill=wday), position="fill")
+# ggplot(data=ptDat) +
+#   geom_bar(aes(x=as.factor(hour), fill=wday), 
+#            colour=alpha(colour="black", alpha=0.4), position="fill")
 
 # Try facetting?
 # Colour by day of week
-ggplot(data=ptDat) +
-  geom_bar(aes(x=as.factor(hour), fill=wday)) +
-  facet_wrap(~month)
+gg18 <- ggplot(data=ptDat) +
+  geom_density(aes(x=hour, fill=wday), position="stack", adjust=2) +
+  facet_wrap(~month) + 
+  ylab("Density") +
+  xlab("Hour") +
+  scale_fill_discrete("Day of Week")
 
-# Map Time! ---------------------------------------------------------------
-tmp <- data.frame(address=unique(ptDat$address),
-                  city="Vancouver",
-                  province="BC",
-                  country="Canada")
-write.csv(tmp, "data_03_maps/unique_addresses.csv", row.names=FALSE)
+# By month
+ggsave2("10_hour-weekday-month-dens", gg18, 6,6)
 
-
-# 01 - Testing ------------------------------------------------------------
-
-length(unique(ptDat$address))
-unique_address <- paste0(unique(ptDat$address), ", Vancouver, BC, Canada")
-dir.create("data_03_maps")
-
-# Save the addresses so we can download the geo-codes (takes a day!)
-write.csv(unique_address, "data_03_maps/unique_addresses.txt", row.names=FALSE)
-saveRDS(unique_address, "data_03_maps/unique_addresses.rds")
-
-# Test with 100
-geo_address <- geocode(head(unique_address, n=100))
-
-# Merge back to pt data
-geo_address <- cbind(address=unique(ptDat$address)[1:100], geo_address)
-ptTmp <- ptDat
-ptTmp <- merge(ptTmp, geo_address, sort=FALSE)
-ptTmp <- subset(ptTmp, subset=!is.na(lon))
-dim(ptTmp)
-
-# Download the map
-map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype='roadmap')
-
-# Plot points
-ggmap(map_van) +
-  geom_point(aes(x=lon, y=lat, col=offence_denorm),
-             data=ptTmp) +
-  geom_density2d(aes(x=lon, y=lat), data=ptTmp)
-
-# This is kind of bad, we are having overlapping points
-
-# Bubble plot!
-# First, sum up the number of points per unique address
-ptTmpBubble1 <- ddply(ptTmp, ~address+lon+lat, summarize,
-                      total_tickets=length(offence_denorm))
-
-# Attempt 1
-ggmap(map_van) +
-  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi)), alpha=0.5,
-             data=ptTmpBubble1) +
-  scale_size_continuous(range=c(1,10), guide="none")
-
-# Try focusing on Downtown core
-map_dt <- get_map(c(lon=-123.1211, lat=49.2842), zoom=14, maptype='roadmap')
-ggmap(map_dt) +
-  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi)), alpha=0.5,
-             data=ptTmpBubble1) +
-  scale_size_continuous(range=c(1,10), guide="none")
-
-ptTmpBubble2 <- ddply(ptTmp, ~address+lon+lat, summarize,
-                      numOffences=table(offence_denorm),
-                      offence=names(table(offence_denorm)))
-
-
-ggplot(aes(x=x,y=y)) + 
-  geom_point(aes(size=z)) + 
-  stat_spoke(aes(angle=r*2*pi, radius=3*z))
+# Lets go to plotting maps now!
