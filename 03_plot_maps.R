@@ -25,54 +25,79 @@ if(!require(ggmap)) {
   require(ggmap)
 }
 
+# For working with dates
+if(!require(stringr)) {
+  install.packages("stringr", repos="http://cran.rstudio.com/")
+  require(stringr)
+}
 
 # Map Time! ---------------------------------------------------------------
-dir.create("data_03_maps")
 
-# Save the addresses so we can download the geo-codes (takes a day!)
-write.csv(unique_address, "data_03_maps/unique_addresses.txt", row.names=FALSE)
-saveRDS(unique_address, "data_03_maps/unique_addresses.rds")
+# Load parking ticket data
+ptDat <- readRDS("data_02_clean/parkingtickets_clean.rds")
 
-# Test with 100
-geo_address <- geocode(head(unique_address, n=100))
+# Load geodata for the addresses
+# FROM http://www.gpsvisualizer.com/geocoder/
+geo <- read.csv("data_03_maps/geocoded_bing.csv", stringsAsFactors=TRUE)
+geo <- subset(geo, select=c("latitude", "longitude", "name"))
+names(geo) <- c("lat", "lon", "address")
+
+geo$address <- str_replace(geo$address, pattern=", Vancouver, BC, Canada", "")
+
+# Test with 1000
+geoTst <- geo[1:1000,]
+sum(!geoTst$address %in% ptDat$address)
 
 # Merge back to pt data
-geo_address <- cbind(address=unique(ptDat$address)[1:100], geo_address)
-ptTmp <- ptDat
-ptTmp <- merge(ptTmp, geo_address, sort=FALSE)
-ptTmp <- subset(ptTmp, subset=!is.na(lon))
-dim(ptTmp)
+ptDat2 <- merge(ptDat, geoTst, sort=FALSE)
+# Drop all non valid entries
+ptDat2 <- subset(ptDat2, subset=!is.na(lon)) 
+dim(ptDat2)
 
 # Download the map
-map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype='roadmap')
+# map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype="watercolor")
+map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype="1")
 
-# Plot points
+# Test
+ggmap(map_van)
+
+# Plot points and 2d density
 ggmap(map_van) +
   geom_point(aes(x=lon, y=lat, col=offence_denorm),
-             data=ptTmp) +
-  geom_density2d(aes(x=lon, y=lat), data=ptTmp)
+             data=ptDat2) +
+  geom_density2d(aes(x=lon, y=lat), data=ptDat2)
 
-# This is kind of bad, we are having overlapping points
+# How about a hexbin plot
+ggmap(map_van) +
+  geom_hex(aes(x=lon, y=lat),
+             data=ptDat2, alpha=0.7, bins=100) +
+  scale_fill_gradient(low="gray80", high="red")
+
 
 # Bubble plot!
 # First, sum up the number of points per unique address
-ptTmpBubble1 <- ddply(ptTmp, ~address+lon+lat, summarize,
+ptTmpBubble1 <- ddply(ptDat2, ~address+lon+lat, summarize,
                       total_tickets=length(offence_denorm))
 
 # Attempt 1
 ggmap(map_van) +
-  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi)), alpha=0.5,
+  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi),
+                 colour=sqrt(total_tickets/pi)), 
+             alpha=0.5,
              data=ptTmpBubble1) +
   scale_size_continuous(range=c(1,10), guide="none")
 
 # Try focusing on Downtown core
 map_dt <- get_map(c(lon=-123.1211, lat=49.2842), zoom=14, maptype='roadmap')
 ggmap(map_dt) +
-  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi)), alpha=0.5,
+  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi),
+                 colour=sqrt(total_tickets/pi)), alpha=0.5,
              data=ptTmpBubble1) +
   scale_size_continuous(range=c(1,10), guide="none")
 
-ptTmpBubble2 <- ddply(ptTmp, ~address+lon+lat, summarize,
+
+# Make a floating pie chart thingy?
+ptTmpBubble2 <- ddply(ptDat2, ~address+lon+lat, summarize,
                       numOffences=table(offence_denorm),
                       offence=names(table(offence_denorm)))
 
