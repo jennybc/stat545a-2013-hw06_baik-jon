@@ -26,8 +26,8 @@ file.remove(outputs)
 
 # NOTE: THIS MAY TAKE A LONG TIME IF quick==FALSE !!!
 # YOU HAVE BEEN WARNED!!!
-source("01_filterReorder.R")
-source("02_aggregatePlot.R")
+source("01_data_process.R")
+source("02_data_explore.R")
 
 # Knit the html file
 knitr::knit2html(input="report/stat545a-2013-hw06_baik-jon.rmd",

@@ -2,7 +2,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ========================================================
 ### Jonathan Baik
 ### STAT 545A Homework 6
-### Oct 21 2013 12:07:45 PM
+### Oct 21 2013 12:12:13 PM
 <hr>
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)
@@ -120,7 +120,7 @@ We begin the data analysis by first examining the different types of parking tic
 <img src="../figures/01_offence-freq.svg"  style="width: 1000px;"/>
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 12:08:03 2013 -->
+<!-- Mon Oct 21 12:12:15 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Count </TH> <TH> Proportion </TH>  </TR>
   <TR> <TD align="right"> Expired Meter </TD> <TD align="right"> 737313 </TD> <TD align="right"> 0.4520 </TD> </TR>
@@ -243,7 +243,7 @@ If we take a histogram of the number of parking tickets issued to each license p
 The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 50 offenders in the table below.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 12:08:04 2013 -->
+<!-- Mon Oct 21 12:12:16 2013 -->
 <TABLE border=1>
 <TR> <TH> Plate </TH> <TH> Make </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 0287GE </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 362 </TD> </TR>
@@ -306,7 +306,7 @@ There is a handful of people who accrue a lot of fines from parking tickets. If 
 Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 12:08:13 2013 -->
+<!-- Mon Oct 21 12:12:24 2013 -->
 <TABLE border=1>
 <TR> <TH> Address </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 1050 Robson St. </TD> <TD align="right"> 17899 </TD> </TR>
