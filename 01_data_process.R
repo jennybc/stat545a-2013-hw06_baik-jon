@@ -123,7 +123,7 @@ tab.make <- table(ptDat$make_denorm)
 
 make2 <- factor(ptDat$make_denorm,
                 levels=c("Other",
-                         names(tab.make)[-which(tab.make <= 10)]))
+                         names(tab.make)[-which(tab.make <= 50)]))
 
 summary(make2)
 make2[is.na(make2)] <- "Other"
