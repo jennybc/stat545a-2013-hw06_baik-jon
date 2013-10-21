@@ -48,19 +48,22 @@ dim(ptDat)
 names(ptDat)
 
 # Now some columns should be read as dates! Let us convert to R's date objects
+# Set the time zone for our dates
+vanTz <- "America/Vancouver"
+
 class(ptDat$datetime)
 # Test conversion to POSIX date object
-ymd_hms(head(ptDat$datetime), tz="America/Vancouver")
+ymd_hms(head(ptDat$datetime), tz=vanTz)
 # Do it for the entire data set
-ptDat$datetime <- ymd_hms(ptDat$datetime, tz="America/Vancouver")
+ptDat$datetime <- ymd_hms(ptDat$datetime, tz=vanTz)
 class(ptDat$datetime)
 
 # The "date" column is also just character. Convert to date object
 class(ptDat$date)
 # Test conversion
-ymd(head(ptDat$date), tz="America/Vancouver")
+ymd(head(ptDat$date), tz=vanTz)
 # Do it for the entire data set
-ptDat$date <- ymd(ptDat$date, tz="America/Vancouver")
+ptDat$date <- ymd(ptDat$date, tz=vanTz)
 class(ptDat$date)
 
 # Leave the time as a character column.
@@ -127,11 +130,128 @@ rm(tab.make)
 ptDat$year <- year(ptDat$date)
 ptDat$month <- month(ptDat$date)
 ptDat$day <- day(ptDat$date)
-ptDat$wday <- factor(weekdays(ptDat$date),
-                     levels=c("Sunday", "Monday", "Tuesday", "Wednesday", 
-                              "Thursday", "Friday", "Saturday"))
+ptDat$wday <- wday(ptDat$date, label=TRUE, abbr=FALSE)
 ptDat$hour <- hour(ptDat$datetime)
 
+# Add Holidays, use reference http://www.labour.gov.bc.ca/esb/facshts/stats.htm
+# Get the years of our data
+ptYears <- unique(ptDat$year)
+
+# New years, 01-01
+holiday1 <- ymd(paste0(ptYears,"0101"))
+
+# Good Friday
+# I found out that this holiday is based on moon phases. This is a hard holiday
+# to determine programmatically
+
+# Can use the timeDate package
+# holiday2 <- GoodFriday(ptYears)
+# holiday2 <- ymd(as.character(holiday2))
+
+# Instead of using an external package, I will just hard code it.
+(holiday2 <- ymd(sprintf("%s%s%s",
+                         ptYears,
+                         c("04", "03", "04", "04", "03"),
+                         c("09", "25", "14", "06", "21"))))
+
+# Victoria Day
+# Monday preceding May 25
+VictoriaDay <- function(year) {
+  require(lubridate)
+  
+  d <- ymd(paste0(year,"0524"))
+  
+  for(i in 1:length(d)) {
+    while(wday(d[i])!=2) {
+      d[i] <- d[i] - days(1)
+    }
+  }
+  
+  return(d)
+}
+holiday3 <- VictoriaDay(ptYears)
+
+# Canada Day
+holiday4 <- ymd(paste0(ptYears, "0701"))
+# The stat holiday will be on Monday if Canada Day is on a Sunday, according to 
+# the website
+holiday4[wday(holiday4)==1] <- holiday4[wday(holiday4)==1] + days(1)
+
+# BC Day, first Monday of August
+holiday5 <- ymd(paste0(ptYears, "0801"))
+for(i in 1:length(holiday5)) {
+  while(wday(holiday5[i]) != 2) {
+    holiday5[i] <- holiday5[i] + days(1)
+  }
+}
+
+# Labour day
+# First Monday of September
+holiday6 <- ymd(paste0(ptYears, "0901"))
+for(i in 1:length(holiday6)) {
+  while(wday(holiday6[i]) != 2) {
+    holiday6[i] <- holiday6[i] + days(1)
+  }
+}
+
+# Thanksgiving
+# We need to egt the second Monday of October
+holiday7 <- ymd(paste0(ptYears, "1001"))
+for(i in 1:length(holiday7)) {
+  if(wday(holiday7[i])==2) {
+    holiday7[i] <- holiday7[i] + weeks(1)
+  } else {
+    while(wday(holiday7[i]) != 2) {
+      holiday7[i] <- holiday7[i] + days(1)
+      if(wday(holiday7[i])==2) holiday7[i] <- holiday7[i] + weeks(1)
+    }
+  }
+}
+
+# Remembrance day, 11-11
+holiday8 <- ymd(paste0(ptYears, "1111"))
+
+
+# Christmas, 12-25
+holiday9 <- ymd(paste0(ptYears, "1225"))
+
+# Change time zone
+
+tz(holiday1) <- vanTz
+tz(holiday2) <- vanTz
+tz(holiday3) <- vanTz
+tz(holiday4) <- vanTz
+tz(holiday5) <- vanTz
+tz(holiday6) <- vanTz
+tz(holiday7) <- vanTz
+tz(holiday8) <- vanTz
+tz(holiday9) <- vanTz
+
+# Holidays
+holidays <- c(holiday1, holiday2, holiday3, holiday4, holiday5, 
+              holiday6, holiday7, holiday8, holiday9)
+hour(holidays) <- 0
+
+# Get the parking tickets data from the holidays
+ptDat$holiday <- FALSE
+ptDat$holiday[ptDat$date %in% holidays] <- TRUE
+
+ptDat$holiday_name <- NA
+ptDat$holiday_name[ptDat$date %in% holiday1] <- "New Years"
+ptDat$holiday_name[ptDat$date %in% holiday2] <- "Good Friday"
+ptDat$holiday_name[ptDat$date %in% holiday3] <- "Victoria Day"
+ptDat$holiday_name[ptDat$date %in% holiday4] <- "Canada Day"
+ptDat$holiday_name[ptDat$date %in% holiday5] <- "B.C. Day"
+ptDat$holiday_name[ptDat$date %in% holiday6] <- "Labour Day"
+ptDat$holiday_name[ptDat$date %in% holiday7] <- "Thanksgiving"
+ptDat$holiday_name[ptDat$date %in% holiday8] <- "Remembrance Day"
+ptDat$holiday_name[ptDat$date %in% holiday9] <- "Christmas"
+ptDat$holiday_name <- factor(ptDat$holiday_name,
+                             levels=c("New Years", "Good Friday",
+                                      "Victoria Day", "Canada Day",
+                                      "B.C. Day", "Labour Day",
+                                      "Thanksgiving", "Remembrance Day",
+                                      "Christmas"))
 
 # Our "cleaned" data set.
 names(ptDat)
