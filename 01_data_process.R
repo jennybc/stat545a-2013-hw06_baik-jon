@@ -8,8 +8,16 @@
 # Set up ------------------------------------------------------------------
 
 # To help us work with dates in R.
-# install.packages("lubridate")
-library(lubridate)
+if(!require(lubridate)) {
+  install.packages("lubridate", repos="http://cran.rstudio.com")
+  require(lubridate)
+}
+
+# For working with strings
+if(!require(stringr)) {
+  install.packages("stringr", repos="http://cran.rstudio.com")
+  require(stringr)
+}
 
 # Read in data and verify -------------------------------------------------
 

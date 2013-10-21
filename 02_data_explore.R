@@ -11,16 +11,34 @@
 # Set up ------------------------------------------------------------------
 
 # For working with dates
-library(lubridate)
+if(!require(lubridate)) {
+  install.packages("lubridate", repos="http://cran.rstudio.com/")
+  require(lubridate)
+}
 
 # For calculating the day of Easter (Good Friday)
-# library(timeDate)
+# if(!require(timeDate)) {
+#   install.packages("timeDate", repos="http://cran.rstudio.com/")
+#   require(timeDate)
+# }
 
 # For plotting pretty plots
-library(ggplot2)
+if(!require(ggplot2)) {
+  install.packages("ggplot2", repos="http://cran.rstudio.com/")
+  require(ggplot2)
+}
 
 # For data aggregation
-library(plyr)
+if(!require(plyr)) {
+  install.packages("plyr", repos="http://cran.rstudio.com/")
+  require(plyr)
+}
+
+# For plotting on maps!
+if(!require(ggmap)) {
+  install.packages("ggmap", repos="http://cran.rstudio.com/")
+  require(ggmap)
+}
 
 # Read in the data
 ptDat <- readRDS("data_02_clean/parkingtickets_clean.rds")
@@ -158,7 +176,8 @@ ggplot(data=subset(ptDat, subset=!is.na(holiday_name))) +
 ptDat[ptDat$month==1 & ptDat$day==1,]
 ptDat[ptDat$month==12 & ptDat$day==25,]
 
-
+# What days do the holidays land on?
+table(ptDat$holiday_name, ptDat$wday)
 
 # 07 - Average tickets per day? Per month? --------------------------------
 
@@ -182,6 +201,8 @@ ptDatMeans$value[3] <- mean(ptDatMeanDay$daily_sum[!wday(ptDatMeanDay$date,
 # Weekday means
 ptDatMeanWeekday <- ddply(ptDat, ~wday, summarize, mean=length(date)/length(unique(date)))
 
+# 08 - How do holidays compare to overall means? --------------------------
+
 # Do the same plot as above, but this time add lines for overall mean, weekday mean, 
 # weekend mean
 ggplot(data=subset(ptDat, subset=!is.na(holiday_name))) +
@@ -190,6 +211,40 @@ ggplot(data=subset(ptDat, subset=!is.na(holiday_name))) +
              linetype="dashed", data=ptDatMeans) +
   scale_colour_manual(values=c("black", "blue", "red"),
                       labels=c("Overall", "Weekday", "Weekend")) +
-  facet_wrap(~year) +
+  facet_grid(~year) + 
+  # facet_grid(wday~grid) +
   ylim(0, 1100) +
   coord_flip()
+# Since the legend isn't working properly,
+# Black is Overall
+# Blue is Weekday
+# Red is Weekend
+
+# Average monthly tickets
+
+
+# Map Time! ---------------------------------------------------------------
+
+
+# 01 - Testing ------------------------------------------------------------
+
+length(unique(ptDat$address))
+unique_address <- paste0(unique(ptDat$address), ", Vancouver, BC, Canada")
+dir.create("data_03_maps")
+
+# Save the addresses so we can download the geo-codes (takes a day!)
+write.csv(unique_address, "data_03_maps/unique_addresses.txt")
+saveRDS(unique_address, "data_03_maps/unique_addresses.rds")
+
+# Test with 100
+geo_address <- geocode(head(unique_address, n=100))
+
+# Download the map
+map <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype='roadmap')
+
+# Plot points
+ptTmp <- cbind(ptDat[1:100,], geo_address)
+
+ggmap(map) +
+  geom_point(data=ptTmp,
+             aes(x=lon, y=lat, col=offence_denorm))
