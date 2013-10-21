@@ -30,7 +30,8 @@ source("01_data_process.R")
 source("02_data_explore.R")
 
 # Knit the html file
-knitr::knit2html(input="report/stat545a-2013-hw06_baik-jon.rmd",
+knitr::knit2html(input="report/stat545a-2013-hw06_baik-jon.rmd", 
+                 output="report/stat545a-2013-hw06_baik-jon.html",
                  stylesheet="css/jasonm23-markdown-css-themes/markdown7.css")
 
 # Open the report locally
