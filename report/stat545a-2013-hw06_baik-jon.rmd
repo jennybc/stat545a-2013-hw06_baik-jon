@@ -5,7 +5,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ### `r format(Sys.time(), "%b %d %Y %X")`
 <hr>
 
-> All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)
+> All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon). All plots in `png` format can be found in my [imgur gallery](http://imgur.com/a/kch1b).
 
 ## Changelog
 
@@ -16,7 +16,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 2013-10-21 02:00 PM:
   Fixed some plots, added colour to existing plots.
   
-2013-10-22 00:00 AM:
+2013-10-22 01:00 AM:
   Added maps and conclusions. Updated MAKEFILE.R
 ```
 
@@ -31,7 +31,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 * Most Ticketed Locations
 * Conclusions
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 # Set up
 
 ## Load pacakges
@@ -269,13 +269,15 @@ This raises another question. What kind of tickets are given out in different ar
 
 <img src="../figures/maps_byOffence.png" style="width: 1000px;"/>
 
-> It looks like the stylesheet is shrinking the image, making the text unreadable. Right-click and click "View image" to view the full size image.
+> It looks like the stylesheet is shrinking the image, making the text unreadable. Here is a link to the [full resolution image](http://i.imgur.com/oNmmnVu.jpg).
 
 Interestingly, the spatial distributions of the different parking offences differ. The most common kind of parking ticket, "Expired Meter", seems to be concentrated in the Downtown area. This is not surprising, as parking meters are not found everywhere in Vancouver. Parking tickets given for stopping in bus zones are concentrated in major roads where buses travel.
 
 ## Conclusions
 
-I had a lot of fun working with the Vancouver parking tickets data set. This data set was much larger than I was used to dealing with in R, and that presented several challenges, such as efficiently aggregating the data for visualizing, and plotting large amounts of data.
+I had a lot of fun working with the Vancouver parking tickets data set. This data set was much larger than I was used to dealing with in R, and that presented several challenges, such as efficiently aggregating the data for visualizing, and plotting large amounts of data. It was unfortunate that there were no truly quantitative variables in the data set. On the plus side, there was a spatial aspect to the data set, and I was able to get my hands dirty plotting maps. If I had more time, I would investigate some quantitative variables that might be linked to the data, such as the fine amount associated with each parking ticket, and also try to visualize any spatio-temporal trends that may be present.
+
+The greatest lesson that I learned from this project is that cleaning the data and reading in the data for analysis is the most time consuming step. I underestimated the time that it would take to get to actually start plotting the data due to concerns of data quality, converting different file formats, etc. Note to self: start projects earlier!
 
 Although this report is titled "Avoiding Parking Tickets in Vancouver", I do not claim that this report will help you avoid getting parking tickets. Just be smart, and park where you're supposed to, and make sure to pay your dues!
 
