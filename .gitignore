@@ -5,6 +5,7 @@
 data_01_raw/*.csv
 data_01_raw/*.sql
 data_02_clean/parkingtickets_clean.csv
+data_03_maps/geocoded_parkingtickets.csv
 
 # Just a temp folder
 temp/
