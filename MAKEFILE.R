@@ -28,6 +28,9 @@ file.remove(outputs)
 # YOU HAVE BEEN WARNED!!!
 source("01_data_process.R")
 source("02_data_explore.R")
+# PLOTTING MAPS!
+# THIS FILE ALSO TAKES A LONG TIME TO RUN!
+source("03_plot_maps.R")
 
 # Knit the html file
 knitr::knit2html(input="report/stat545a-2013-hw06_baik-jon.rmd", 

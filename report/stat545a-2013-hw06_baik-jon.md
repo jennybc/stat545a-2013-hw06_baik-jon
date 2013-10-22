@@ -2,7 +2,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ========================================================
 ### Jonathan Baik
 ### STAT 545A Homework 6
-### Oct 21 2013 10:55:47 PM
+### Oct 22 2013 1:00:03 AM
 <hr>
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)
@@ -15,6 +15,9 @@ Avoiding Parking Tickets in Vancouver, B.C.
   
 2013-10-21 02:00 PM:
   Fixed some plots, added colour to existing plots.
+  
+2013-10-22 00:00 AM:
+  Added maps and conclusions. Updated MAKEFILE.R
 ```
 
 ## Contents
@@ -26,6 +29,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 * Aren't the Holidays Nice?
 * Repeat Offenders
 * Most Ticketed Locations
+* Conclusions
 
 
 ```
@@ -139,7 +143,7 @@ We begin the data analysis by first examining the different types of parking tic
 <img src="../figures/01_offence-freq.svg"  style="width: 1000px;"/>
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 22:55:51 2013 -->
+<!-- Tue Oct 22 01:00:07 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Count </TH> <TH> Proportion </TH>  </TR>
   <TR> <TD align="right"> Expired Meter </TD> <TD align="right"> 737313 </TD> <TD align="right"> 0.4520 </TD> </TR>
@@ -270,7 +274,7 @@ If we take a histogram of the number of parking tickets issued to each license p
 The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 25 offenders in the table below.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 22:55:52 2013 -->
+<!-- Tue Oct 22 01:00:08 2013 -->
 <TABLE border=1>
 <TR> <TH> Plate </TH> <TH> Make </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 0287GE </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 362 </TD> </TR>
@@ -308,7 +312,7 @@ There is a handful of people who accrue a lot of fines from parking tickets. If 
 Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 22:55:52 2013 -->
+<!-- Tue Oct 22 01:00:08 2013 -->
 <TABLE border=1>
 <TR> <TH> Address </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 1050 Robson St. </TD> <TD align="right"> 17899 </TD> </TR>
@@ -342,14 +346,14 @@ Finally, we will check which areas receive the largest number of parking tickets
 It looks like Downtown Vancouver, and parts of Broadway St. are the hottest places to be for parking enforcement officers! Let us take a look on the map where these are:
 
 <!-- Map generated in R 3.0.2 by googleVis 0.4.5 package -->
-<!-- Mon Oct 21 22:55:52 2013 -->
+<!-- Tue Oct 22 01:00:08 2013 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID2bc4a781faf () {
+function gvisDataMapID1dac287e5796 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -487,17 +491,17 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID2bc4a781faf() {
-var data = gvisDataMapID2bc4a781faf();
+function drawChartMapID1dac287e5796() {
+var data = gvisDataMapID1dac287e5796();
 var options = {};
 options["showTip"] = true;
 options["showLine"] = false;
 options["enableScrollWheel"] = true;
-options["mapType"] = "roadmap";
+options["mapType"] = "normal";
 options["useMapTypeControl"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID2bc4a781faf')
+    document.getElementById('MapID1dac287e5796')
     );
     chart.draw(data,options);
     
@@ -521,9 +525,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID2bc4a781faf);
+callbacks.push(drawChartMapID1dac287e5796);
 })();
-function displayChartMapID2bc4a781faf() {
+function displayChartMapID1dac287e5796() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -547,15 +551,33 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID2bc4a781faf"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID1dac287e5796"></script>
  
 <!-- divChart -->
   
-<div id="MapID2bc4a781faf"
+<div id="MapID1dac287e5796"
   style="width: 600px; height: 500px;">
 </div>
 
 
-## More to Come (?)
+We will look at the big picture. Where are the most parking tickets handed out? We overlay a hexbin plot over a static map of the City of Vancouver. The areas with high frequency of parking tickets handed out are highlighted in red, while low frequency areas are coloured in black.
+
+<img src="../figures/maps_ptVan.png" style="width: 800px;"/>
+
+It looks like the Downtown area, as well as the Broadway Corridor, W 4th Ave and the Granville/Cambie areas attract bad parkers.
+
+This raises another question. What kind of tickets are given out in different areas of Vancouver? Is it uniformly distributed accross all of Vancouver, or is it more likely to receive certain types of parking tickets in some parts of Vancouver over other regions? We overlay a scatter plot, faceted by type of parking ticket.
+
+<img src="../figures/maps_byOffence.png" style="width: 1000px;"/>
+
+> It looks like the stylesheet is shrinking the image, making the text unreadable. Right-click and click "View image" to view the full size image.
+
+Interestingly, the spatial distributions of the different parking offences differ. The most common kind of parking ticket, "Expired Meter", seems to be concentrated in the Downtown area. This is not surprising, as parking meters are not found everywhere in Vancouver. Parking tickets given for stopping in bus zones are concentrated in major roads where buses travel.
+
+## Conclusions
+
+I had a lot of fun working with the Vancouver parking tickets data set. This data set was much larger than I was used to dealing with in R, and that presented several challenges, such as efficiently aggregating the data for visualizing, and plotting large amounts of data.
+
+Although this report is titled "Avoiding Parking Tickets in Vancouver", I do not claim that this report will help you avoid getting parking tickets. Just be smart, and park where you're supposed to, and make sure to pay your dues!
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)

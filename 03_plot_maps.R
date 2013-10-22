@@ -37,6 +37,21 @@ if(!require(googleVis)) {
   require(googleVis)
 }
 
+# For working with interactive maps
+if(!require(scales)) {
+  install.packages("scales", repos="http://cran.rstudio.com/")
+  require(scales)
+}
+
+# For saving image files
+ggsave2 <- function(name, plot, width, height) {
+  ggsave(filename=paste0("figures/", name, ".svg"), plot=plot,
+         width=width, height=height)
+  ggsave(filename=paste0("figures/", name, ".png"), plot=plot,
+         width=width, height=height)
+}
+
+
 # Map Time! ---------------------------------------------------------------
 
 # Load parking ticket data
@@ -52,74 +67,16 @@ geo$address <- str_replace(geo$address, pattern=", Vancouver, BC, Canada", "")
 
 
 # TESTING -----------------------------------------------------------------
-
-# Test with 1000
-geoTst <- geo[1:1000,]
-sum(!geoTst$address %in% ptDat$address)
-
-# Merge back to pt data
-ptGeo <- merge(ptDat, geoTst, sort=FALSE)
-# Drop all non valid entries
-ptGeo <- subset(ptGeo, subset=!is.na(lon)) 
-dim(ptGeo)
-
-# Download the map
-# map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype="watercolor")
-van_coord <- c(lon=-123.1000, lat=49.2500)
-map_van <- get_map(van_coord, source="cloudmade", maptype=15434,
-                   api_key="81abbf2fd13e4ee489477503d0e07495",
-                   zoom=12)
-
-# Test
-# ggmap(map_van)
-
-# Plot points and 2d density
-ggmap(map_van) +
-  geom_point(aes(x=lon, y=lat, col=offence_denorm),
-             data=ptGeo) +
-  geom_density2d(aes(x=lon, y=lat), data=ptDat2)
-
-# How about a hexbin plot
-ggmap(map_van) +
-  geom_hex(aes(x=lon, y=lat),
-             data=ptDat2, alpha=0.7, bins=100) +
-  scale_fill_gradient(low="gray80", high="red")
-
-
-# Bubble plot!
-# First, sum up the number of points per unique address
-ptTmpBubble1 <- ddply(ptDat2, ~address+lon+lat, summarize,
-                      total_tickets=length(offence_denorm))
-
-# Attempt 1
-ggmap(map_van) +
-  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi),
-                 colour=sqrt(total_tickets/pi)), 
-             alpha=0.5,
-             data=ptTmpBubble1) +
-  scale_size_continuous(range=c(1,10), guide="none")
-
-# Try focusing on Downtown core
-dt_coord <- c(lon=-123.1211, lat=49.2842)
-map_dt <- get_map(dt_coord, zoom=14,  source="cloudmade", maptype=15434,
-                  api_key="81abbf2fd13e4ee489477503d0e07495",)
-ggmap(map_dt) +
-  geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi),
-                 colour=sqrt(total_tickets/pi)), alpha=0.5,
-             data=ptTmpBubble1) +
-  scale_size_continuous(range=c(1,10), guide="none")
-
-
-# Make a floating pie chart thingy?
-ptTmpBubble2 <- ddply(ptDat2, ~address+lon+lat, summarize,
-                      numOffences=table(offence_denorm),
-                      offence=names(table(offence_denorm)))
-
-
-ggplot(aes(x=x,y=y)) + 
-  geom_point(aes(size=z)) + 
-  stat_spoke(aes(angle=r*2*pi, radius=3*z))
-
+# 
+# # Test with 1000
+# geoTst <- geo[1:1000,]
+# sum(!geoTst$address %in% ptDat$address)
+# 
+# # Merge back to pt data
+# ptGeo <- merge(ptDat, geoTst, sort=FALSE)
+# # Drop all non valid entries
+# ptGeo <- subset(ptGeo, subset=!is.na(lon)) 
+# dim(ptGeo)
 
 # Now with all data -------------------------------------------------------
 
@@ -136,6 +93,50 @@ dim(ptGeo)
 # Save
 write.csv(ptGeo, "data_03_maps/geocoded_parkingtickets.csv", row.names=FALSE)
 saveRDS(ptGeo, "data_03_maps/geocoded_parkingtickets.rds")
+
+
+# First Plot --------------------------------------------------------------
+
+# Check the factor order for offence_denorm
+if(levels(ptGeo$offence_denorm)[1]!="Expired Meter")
+  ptGeo$offence_denorm <- factor(ptGeo$offence_denorm,
+                                 levels=rev(levels(ptGeo$offence_denorm)))
+
+# Download the map
+# map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype="watercolor")
+van_coord <- c(lon=-123.1100, lat=49.2500)
+map_van <- get_map(van_coord, source="cloudmade", maptype=15434,
+                   api_key="81abbf2fd13e4ee489477503d0e07495",
+                   zoom=12)
+# Test
+# ggmap(map_van)
+
+# Plot the density
+ggm00 <- ggmap(map_van) +
+  geom_hex(aes(x=lon, y=lat), bins=120, alpha=0.9, colour=alpha('white',0.1),
+           data=ptGeo) +
+  ylab("Latitude") +
+  xlab("Longitude") +
+  scale_fill_gradient2("Frequency", midpoint=12500,
+                      low="black", mid="orangered3", high="orangered")
+
+ggsave2("maps_ptVan", ggm00, 10, 10)
+
+# First, to reduce overplotting, do not plot over any of the points
+ptGeoTmp1 <- ddply(ptGeo, ~address+offence_denorm, summarize,
+                   lon=unique(lon),
+                   lat=unique(lat))
+
+# Plot points
+ggm01 <- ggmap(map_van) +
+  geom_point(aes(x=lon, y=lat, col=offence_denorm),
+             data=ptGeoTmp1) +
+  facet_wrap(~offence_denorm) +
+  ylab("Latitude") +
+  xlab("Longitude") + 
+  scale_color_discrete("Offence")
+
+ggsave2("maps_byOffence", ggm01, 17, 13)
 
 # googleVis ---------------------------------------------------------------
 
@@ -165,9 +166,9 @@ write.csv(topLoc, "data_03_maps/topParkingLocations.csv", row.names=FALSE)
 saveRDS(topLoc, "data_03_maps/topParkingLocations.rds")
 
 # Try it out
-VanMap <-gvisMap(head(topLoc, n=25), "latLong", "tip",
-                 options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE,
-                              mapType='hybrid', useMapTypeControl=TRUE))
+# VanMap <-gvisMap(head(topLoc, n=25), "latLong", "tip",
+#                  options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE,
+#                               mapType='hybrid', useMapTypeControl=TRUE))
 
 # plot(VanMap)
 # print(VanMap, "chart", file="11_top25.html")

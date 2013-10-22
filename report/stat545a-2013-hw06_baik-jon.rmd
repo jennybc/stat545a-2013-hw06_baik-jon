@@ -15,6 +15,9 @@ Avoiding Parking Tickets in Vancouver, B.C.
   
 2013-10-21 02:00 PM:
   Fixed some plots, added colour to existing plots.
+  
+2013-10-22 00:00 AM:
+  Added maps and conclusions. Updated MAKEFILE.R
 ```
 
 ## Contents
@@ -26,6 +29,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 * Aren't the Holidays Nice?
 * Repeat Offenders
 * Most Ticketed Locations
+* Conclusions
 
 ```{r setup, echo=FALSE}
 # Set up
@@ -255,6 +259,24 @@ VanMap <-gvisMap(head(ptLoc, n=25), "latLong", "tip",
 print(VanMap, "chart")
 ```
 
-## More to Come (?)
+We will look at the big picture. Where are the most parking tickets handed out? We overlay a hexbin plot over a static map of the City of Vancouver. The areas with high frequency of parking tickets handed out are highlighted in red, while low frequency areas are coloured in black.
+
+<img src="../figures/maps_ptVan.png" style="width: 800px;"/>
+
+It looks like the Downtown area, as well as the Broadway Corridor, W 4th Ave and the Granville/Cambie areas attract bad parkers.
+
+This raises another question. What kind of tickets are given out in different areas of Vancouver? Is it uniformly distributed accross all of Vancouver, or is it more likely to receive certain types of parking tickets in some parts of Vancouver over other regions? We overlay a scatter plot, faceted by type of parking ticket.
+
+<img src="../figures/maps_byOffence.png" style="width: 1000px;"/>
+
+> It looks like the stylesheet is shrinking the image, making the text unreadable. Right-click and click "View image" to view the full size image.
+
+Interestingly, the spatial distributions of the different parking offences differ. The most common kind of parking ticket, "Expired Meter", seems to be concentrated in the Downtown area. This is not surprising, as parking meters are not found everywhere in Vancouver. Parking tickets given for stopping in bus zones are concentrated in major roads where buses travel.
+
+## Conclusions
+
+I had a lot of fun working with the Vancouver parking tickets data set. This data set was much larger than I was used to dealing with in R, and that presented several challenges, such as efficiently aggregating the data for visualizing, and plotting large amounts of data.
+
+Although this report is titled "Avoiding Parking Tickets in Vancouver", I do not claim that this report will help you avoid getting parking tickets. Just be smart, and park where you're supposed to, and make sure to pay your dues!
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)
