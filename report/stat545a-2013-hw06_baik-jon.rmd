@@ -34,6 +34,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 library(plyr)
 library(xtable)
 library(ggplot2)
+library(googleVis)
 library(scales)
 
 # Global knitr options
@@ -203,7 +204,7 @@ If we take a histogram of the number of parking tickets issued to each license p
 
 <img src="../figures/09_plate-totals.svg" style="width: 800px;"/>
 
-The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 50 offenders in the table below.
+The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 25 offenders in the table below.
 
 ```{r plates, echo=FALSE, results='asis'}
 # Load
@@ -213,7 +214,7 @@ ptDatPlateSumMake <- readRDS("../data_02_clean/ptDatPlateSumMake.rds")
 ptDatPlateSumMake <- arrange(ptDatPlateSumMake, desc(sum))
 
 # Make and display table
-tab2 <- head(ptDatPlateSumMake, n=50)
+tab2 <- head(ptDatPlateSumMake, n=25)
 names(tab2) <- c("Plate", "Make", "No. Tickets")
 
 tab2x <- xtable(tab2)
@@ -230,11 +231,11 @@ There is a handful of people who accrue a lot of fines from parking tickets. If 
 Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver.
 
 ```{r mostTickLoc, echo=FALSE, results='asis'}
-# Aggregate, then sort
-ptLoc <- ddply(ptDat, ~address, summarize, sum=length(address))
-ptLoc <- arrange(ptLoc, desc(sum))
+# Read in data
+ptLoc <- readRDS("../data_03_maps/topParkingLocations.rds")
+ptLocSub <- subset(ptLoc, select=c("address", "numTickets"))
 
-tab3 <- head(ptLoc, n=25)
+tab3 <- head(ptLocSub, n=25)
 names(tab3) <- c("Address", "No. Tickets")
 
 tab3x <- xtable(tab3)
@@ -242,7 +243,17 @@ tab3x <- xtable(tab3)
 print.xtable(tab3x, type="html", include.rownames=FALSE)
 ```
 
-It looks like Downtown Vancouver, and parts of Broadway St. are the hottest places to be for parking enforcement officers! 
+It looks like Downtown Vancouver, and parts of Broadway St. are the hottest places to be for parking enforcement officers! Let us take a look on the map where these are:
+
+```{r gvisMostTick, echo=FALSE, results='asis'}
+# googleVis
+VanMap <-gvisMap(head(ptLoc, n=25), "latLong", "tip",
+                 options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE,
+                              mapType='normal', useMapTypeControl=TRUE))
+
+# Print out
+print(VanMap, "chart")
+```
 
 ## More to Come (?)
 

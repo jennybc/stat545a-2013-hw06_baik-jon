@@ -31,6 +31,12 @@ if(!require(stringr)) {
   require(stringr)
 }
 
+# For working with interactive maps
+if(!require(googleVis)) {
+  install.packages("googleVis", repos="http://cran.rstudio.com/")
+  require(googleVis)
+}
+
 # Map Time! ---------------------------------------------------------------
 
 # Load parking ticket data
@@ -44,27 +50,33 @@ names(geo) <- c("lat", "lon", "address")
 
 geo$address <- str_replace(geo$address, pattern=", Vancouver, BC, Canada", "")
 
+
+# TESTING -----------------------------------------------------------------
+
 # Test with 1000
 geoTst <- geo[1:1000,]
 sum(!geoTst$address %in% ptDat$address)
 
 # Merge back to pt data
-ptDat2 <- merge(ptDat, geoTst, sort=FALSE)
+ptGeo <- merge(ptDat, geoTst, sort=FALSE)
 # Drop all non valid entries
-ptDat2 <- subset(ptDat2, subset=!is.na(lon)) 
-dim(ptDat2)
+ptGeo <- subset(ptGeo, subset=!is.na(lon)) 
+dim(ptGeo)
 
 # Download the map
 # map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype="watercolor")
-map_van <- get_map(c(lon=-123.1000, lat=49.2500), zoom=11, maptype="1")
+van_coord <- c(lon=-123.1000, lat=49.2500)
+map_van <- get_map(van_coord, source="cloudmade", maptype=15434,
+                   api_key="81abbf2fd13e4ee489477503d0e07495",
+                   zoom=12)
 
 # Test
-ggmap(map_van)
+# ggmap(map_van)
 
 # Plot points and 2d density
 ggmap(map_van) +
   geom_point(aes(x=lon, y=lat, col=offence_denorm),
-             data=ptDat2) +
+             data=ptGeo) +
   geom_density2d(aes(x=lon, y=lat), data=ptDat2)
 
 # How about a hexbin plot
@@ -88,7 +100,9 @@ ggmap(map_van) +
   scale_size_continuous(range=c(1,10), guide="none")
 
 # Try focusing on Downtown core
-map_dt <- get_map(c(lon=-123.1211, lat=49.2842), zoom=14, maptype='roadmap')
+dt_coord <- c(lon=-123.1211, lat=49.2842)
+map_dt <- get_map(dt_coord, zoom=14,  source="cloudmade", maptype=15434,
+                  api_key="81abbf2fd13e4ee489477503d0e07495",)
 ggmap(map_dt) +
   geom_point(aes(x=lon, y=lat, size=sqrt(total_tickets/pi),
                  colour=sqrt(total_tickets/pi)), alpha=0.5,
@@ -105,3 +119,55 @@ ptTmpBubble2 <- ddply(ptDat2, ~address+lon+lat, summarize,
 ggplot(aes(x=x,y=y)) + 
   geom_point(aes(size=z)) + 
   stat_spoke(aes(angle=r*2*pi, radius=3*z))
+
+
+# Now with all data -------------------------------------------------------
+
+# Test with 1000
+sum(!geo$address %in% ptDat$address)
+
+# Merge back to pt data
+ptGeo <- merge(ptDat, geo, sort=FALSE)
+dim(ptGeo)
+
+# How many non entries do we have?
+# dim(subset(ptGeo, subset=is.na(lon)) )
+
+# Save
+write.csv(ptGeo, "data_03_maps/geocoded_parkingtickets.csv", row.names=FALSE)
+saveRDS(ptGeo, "data_03_maps/geocoded_parkingtickets.rds")
+
+# googleVis ---------------------------------------------------------------
+
+# Example
+# Hurricane Andrew (1992) storm track with Google Maps
+# data(Andrew)
+# head(Andrew)
+# AndrewMap <- gvisMap(Andrew, "LatLong" , "Tip", 
+#                      options=list(showTip=TRUE, showLine=TRUE, enableScrollWheel=TRUE,
+#                                   mapType='terrain', useMapTypeControl=TRUE))
+# plot(AndrewMap)
+
+# My turn
+topLoc <- ddply(ptGeo, ~address, summarize,
+                numTickets=length(address),
+                latLong=paste0(lat,":",lon)[1],
+                address=address[1])
+# Sort
+topLoc <- arrange(topLoc, desc(numTickets))
+# Get tool tip
+topLoc$tip <- paste0("Rank: ", 1:nrow(topLoc),
+                     "<BR>Address: ", topLoc$address,
+                     "<BR>Number of tickets: ", topLoc$numTickets)
+
+# Save
+write.csv(topLoc, "data_03_maps/topParkingLocations.csv", row.names=FALSE)
+saveRDS(topLoc, "data_03_maps/topParkingLocations.rds")
+
+# Try it out
+VanMap <-gvisMap(head(topLoc, n=25), "latLong", "tip",
+                 options=list(showTip=TRUE, showLine=FALSE, enableScrollWheel=TRUE,
+                              mapType='hybrid', useMapTypeControl=TRUE))
+
+# plot(VanMap)
+# print(VanMap, "chart", file="11_top25.html")

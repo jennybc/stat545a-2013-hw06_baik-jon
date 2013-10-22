@@ -2,7 +2,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ========================================================
 ### Jonathan Baik
 ### STAT 545A Homework 6
-### Oct 21 2013 1:51:52 PM
+### Oct 21 2013 10:55:47 PM
 <hr>
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon)
@@ -28,6 +28,26 @@ Avoiding Parking Tickets in Vancouver, B.C.
 * Most Ticketed Locations
 
 
+```
+## 
+## Welcome to googleVis version 0.4.5
+## 
+## Please read the Google API Terms of Use
+## before you use the package:
+## https://developers.google.com/terms/
+## 
+## Type ?googleVis to access the overall documentation and
+## vignette('googleVis') for the package vignette.
+## You can execute a demo of the package via: demo(googleVis)
+## 
+## More information is available on the googleVis project web-site:
+## http://code.google.com/p/google-motion-charts-with-r/
+## 
+## Contact: <rvisualisation@gmail.com>
+## 
+## To suppress the this message use:
+## suppressPackageStartupMessages(library(googleVis))
+```
 
 
 ## The Data
@@ -119,7 +139,7 @@ We begin the data analysis by first examining the different types of parking tic
 <img src="../figures/01_offence-freq.svg"  style="width: 1000px;"/>
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 13:51:57 2013 -->
+<!-- Mon Oct 21 22:55:51 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Count </TH> <TH> Proportion </TH>  </TR>
   <TR> <TD align="right"> Expired Meter </TD> <TD align="right"> 737313 </TD> <TD align="right"> 0.4520 </TD> </TR>
@@ -247,10 +267,10 @@ If we take a histogram of the number of parking tickets issued to each license p
 
 <img src="../figures/09_plate-totals.svg" style="width: 800px;"/>
 
-The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 50 offenders in the table below.
+The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 25 offenders in the table below.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 13:51:57 2013 -->
+<!-- Mon Oct 21 22:55:52 2013 -->
 <TABLE border=1>
 <TR> <TH> Plate </TH> <TH> Make </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 0287GE </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 362 </TD> </TR>
@@ -278,31 +298,6 @@ The keen observer will notice that only 99.689% of the data is displayed in the 
   <TR> <TD> 982CXC </TD> <TD> HONDA </TD> <TD align="right"> 137 </TD> </TR>
   <TR> <TD> 180KJM </TD> <TD> MERCEDES </TD> <TD align="right"> 135 </TD> </TR>
   <TR> <TD> 2538AY </TD> <TD> UNMARKED </TD> <TD align="right"> 130 </TD> </TR>
-  <TR> <TD> 2992SW </TD> <TD> UNMARKED </TD> <TD align="right"> 129 </TD> </TR>
-  <TR> <TD> 742DPG </TD> <TD> SUBARU </TD> <TD align="right"> 129 </TD> </TR>
-  <TR> <TD> 7960TM </TD> <TD> UNMARKED </TD> <TD align="right"> 128 </TD> </TR>
-  <TR> <TD> 815DEM </TD> <TD> FORD </TD> <TD align="right"> 126 </TD> </TR>
-  <TR> <TD> 697CTJ </TD> <TD> TOYOTA </TD> <TD align="right"> 123 </TD> </TR>
-  <TR> <TD> 712FEN </TD> <TD> LEXUS </TD> <TD align="right"> 121 </TD> </TR>
-  <TR> <TD> 7582SJ </TD> <TD> UNMARKED </TD> <TD align="right"> 120 </TD> </TR>
-  <TR> <TD> 215HCV </TD> <TD> ACURA </TD> <TD align="right"> 118 </TD> </TR>
-  <TR> <TD> 340HFN </TD> <TD> TOYOTA </TD> <TD align="right"> 116 </TD> </TR>
-  <TR> <TD> 0853GK </TD> <TD> MERCEDES </TD> <TD align="right"> 114 </TD> </TR>
-  <TR> <TD> 6144WM </TD> <TD> UNMARKED </TD> <TD align="right"> 112 </TD> </TR>
-  <TR> <TD> 9531BA </TD> <TD> UNLISTED </TD> <TD align="right"> 112 </TD> </TR>
-  <TR> <TD> 7579SJ </TD> <TD> UNMARKED </TD> <TD align="right"> 109 </TD> </TR>
-  <TR> <TD> INCMPT </TD> <TD> HONDA </TD> <TD align="right"> 109 </TD> </TR>
-  <TR> <TD> 261FGV </TD> <TD> BMW </TD> <TD align="right"> 108 </TD> </TR>
-  <TR> <TD> 319AMG </TD> <TD> ACURA </TD> <TD align="right"> 108 </TD> </TR>
-  <TR> <TD> 0286GE </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 104 </TD> </TR>
-  <TR> <TD> 558DDN </TD> <TD> AUDI </TD> <TD align="right"> 104 </TD> </TR>
-  <TR> <TD> DAW103 </TD> <TD> TOYOTA </TD> <TD align="right"> 103 </TD> </TR>
-  <TR> <TD> 3430JD </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 102 </TD> </TR>
-  <TR> <TD> 4577PY </TD> <TD> UNMARKED </TD> <TD align="right"> 102 </TD> </TR>
-  <TR> <TD> 9267CS </TD> <TD> CHEVROLET </TD> <TD align="right"> 102 </TD> </TR>
-  <TR> <TD> 1197GJ </TD> <TD> MERCEDES </TD> <TD align="right"> 101 </TD> </TR>
-  <TR> <TD> 6298GY </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 101 </TD> </TR>
-  <TR> <TD> DVD455 </TD> <TD> JEEP </TD> <TD align="right"> 101 </TD> </TR>
    </TABLE>
 
 
@@ -313,7 +308,7 @@ There is a handful of people who accrue a lot of fines from parking tickets. If 
 Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Mon Oct 21 13:52:07 2013 -->
+<!-- Mon Oct 21 22:55:52 2013 -->
 <TABLE border=1>
 <TR> <TH> Address </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 1050 Robson St. </TD> <TD align="right"> 17899 </TD> </TR>
@@ -344,7 +339,222 @@ Finally, we will check which areas receive the largest number of parking tickets
    </TABLE>
 
 
-It looks like Downtown Vancouver, and parts of Broadway St. are the hottest places to be for parking enforcement officers! 
+It looks like Downtown Vancouver, and parts of Broadway St. are the hottest places to be for parking enforcement officers! Let us take a look on the map where these are:
+
+<!-- Map generated in R 3.0.2 by googleVis 0.4.5 package -->
+<!-- Mon Oct 21 22:55:52 2013 -->
+
+
+<!-- jsHeader -->
+<script type="text/javascript">
+ 
+// jsData 
+function gvisDataMapID2bc4a781faf () {
+var data = new google.visualization.DataTable();
+var datajson =
+[
+ [
+ 49.2838097,
+-123.1238556,
+"Rank: 1<BR>Address: 1050 Robson St.<BR>Number of tickets: 17899" 
+],
+[
+ 49.2851753,
+-123.1259842,
+"Rank: 2<BR>Address: 1150 Robson St.<BR>Number of tickets: 15674" 
+],
+[
+ 49.2817116,
+-123.1228333,
+"Rank: 3<BR>Address: 850 Hornby St.<BR>Number of tickets: 10501" 
+],
+[
+ 49.2623367,
+-123.090065,
+"Rank: 4<BR>Address: 650 Broadway St. W.<BR>Number of tickets: 10426" 
+],
+[
+ 49.2846603,
+-123.1232986,
+"Rank: 5<BR>Address: 1050 Alberni St.<BR>Number of tickets: 9729" 
+],
+[
+ 49.2621231,
+-123.0686722,
+"Rank: 6<BR>Address: 1750 Broadway St. W.<BR>Number of tickets: 9121" 
+],
+[
+ 49.2799988,
+-123.1255035,
+"Rank: 7<BR>Address: 1050 Hornby St.<BR>Number of tickets: 9100" 
+],
+[
+ 49.2841492,
+-123.1192322,
+"Rank: 8<BR>Address: 650 Hornby St.<BR>Number of tickets: 8863" 
+],
+[
+ 49.2759705,
+-123.1196518,
+"Rank: 9<BR>Address: 1050 Mainland St<BR>Number of tickets: 8328" 
+],
+[
+ 49.2766495,
+-123.1205673,
+"Rank: 10<BR>Address: 1050 Homer St.<BR>Number of tickets: 8269" 
+],
+[
+ 49.2752647,
+-123.1218262,
+"Rank: 11<BR>Address: 1150 Hamilton St.<BR>Number of tickets: 8094" 
+],
+[
+ 49.2812691,
+-123.1216431,
+"Rank: 12<BR>Address: 850 Howe St.<BR>Number of tickets: 7941" 
+],
+[
+ 49.2621384,
+-123.0860214,
+"Rank: 13<BR>Address: 850 Broadway St. W.<BR>Number of tickets: 7848" 
+],
+[
+ 49.2680397,
+-123.156311,
+"Rank: 14<BR>Address: 2250 4th Ave W.<BR>Number of tickets: 7634" 
+],
+[
+ 49.2808418,
+-123.124176,
+"Rank: 15<BR>Address: 950 Hornby St.<BR>Number of tickets: 7462" 
+],
+[
+ 49.2679291,
+-123.1491241,
+"Rank: 16<BR>Address: 1950 4th Ave W.<BR>Number of tickets: 7403" 
+],
+[
+ 49.2621689,
+-123.1384277,
+"Rank: 17<BR>Address: 2650 Granville St.<BR>Number of tickets: 7354" 
+],
+[
+ 49.2621956,
+-123.0706787,
+"Rank: 18<BR>Address: 1650 Broadway St. W.<BR>Number of tickets: 7062" 
+],
+[
+ 49.2622337,
+-123.0764618,
+"Rank: 19<BR>Address: 1350 Broadway St. W.<BR>Number of tickets: 6961" 
+],
+[
+ 49.2622566,
+-123.0799866,
+"Rank: 20<BR>Address: 1150 Broadway St. W.<BR>Number of tickets: 6903" 
+],
+[
+ 49.2763138,
+-123.1202545,
+"Rank: 21<BR>Address: 1050 Hamilton St.<BR>Number of tickets: 6889" 
+],
+[
+ 49.2622948,
+-123.0841064,
+"Rank: 22<BR>Address: 950 Broadway St. W.<BR>Number of tickets: 6821" 
+],
+[
+ 49.2736473,
+-123.121048,
+"Rank: 23<BR>Address: 150 Davie St.<BR>Number of tickets: 6676" 
+],
+[
+ 49.2756004,
+-123.1224899,
+"Rank: 24<BR>Address: 1150 Homer St.<BR>Number of tickets: 6658" 
+],
+[
+ 49.2749138,
+-123.1212921,
+"Rank: 25<BR>Address: 1150 Mainland St<BR>Number of tickets: 6562" 
+] 
+];
+data.addColumn('number','Latitude');
+data.addColumn('number','Longitude');
+data.addColumn('string','tip');
+data.addRows(datajson);
+return(data);
+}
+ 
+// jsDrawChart
+function drawChartMapID2bc4a781faf() {
+var data = gvisDataMapID2bc4a781faf();
+var options = {};
+options["showTip"] = true;
+options["showLine"] = false;
+options["enableScrollWheel"] = true;
+options["mapType"] = "roadmap";
+options["useMapTypeControl"] = true;
+
+    var chart = new google.visualization.Map(
+    document.getElementById('MapID2bc4a781faf')
+    );
+    chart.draw(data,options);
+    
+
+}
+  
+ 
+// jsDisplayChart
+(function() {
+var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+var chartid = "map";
+  
+// Manually see if chartid is in pkgs (not all browsers support Array.indexOf)
+var i, newPackage = true;
+for (i = 0; newPackage && i < pkgs.length; i++) {
+if (pkgs[i] === chartid)
+newPackage = false;
+}
+if (newPackage)
+  pkgs.push(chartid);
+  
+// Add the drawChart function to the global list of callbacks
+callbacks.push(drawChartMapID2bc4a781faf);
+})();
+function displayChartMapID2bc4a781faf() {
+  var pkgs = window.__gvisPackages = window.__gvisPackages || [];
+  var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
+  window.clearTimeout(window.__gvisLoad);
+  // The timeout is set to 100 because otherwise the container div we are
+  // targeting might not be part of the document yet
+  window.__gvisLoad = setTimeout(function() {
+  var pkgCount = pkgs.length;
+  google.load("visualization", "1", { packages:pkgs, callback: function() {
+  if (pkgCount != pkgs.length) {
+  // Race condition where another setTimeout call snuck in after us; if
+  // that call added a package, we must not shift its callback
+  return;
+}
+while (callbacks.length > 0)
+callbacks.shift()();
+} });
+}, 100);
+}
+ 
+// jsFooter
+</script>
+ 
+<!-- jsChart -->  
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID2bc4a781faf"></script>
+ 
+<!-- divChart -->
+  
+<div id="MapID2bc4a781faf"
+  style="width: 600px; height: 500px;">
+</div>
+
 
 ## More to Come (?)
 

@@ -1,5 +1,3 @@
-options(rpubs.upload.method = "internal")
-
 options(rstudio.markdownToHTML = function(inputFile, outputFile) {
      require(markdown)
      require(stringr)
@@ -18,9 +16,11 @@ options(rstudio.markdownToHTML = function(inputFile, outputFile) {
      }
      
      pathToCSS <- paste0(pathToCSS, "School/Grad/STAT545A/stat545a-hw06/",
-                         "stat545a-hw06_baik-jon/",
+                         "stat545a-2013-hw06_baik-jon/",
                          "css/jasonm23-markdown-css-themes/markdown7.css")
      
      markdownToHTML(inputFile, outputFile, options = htmlOptions, 
                     stylesheet = pathToCSS)
  })
+
+options(rpubs.upload.method = "internal")
