@@ -6,9 +6,9 @@ Parking Ticket Data Analysis for Vancouver, B.C.
 
 ##### How to run:
 
-Run `MAKEFILE.R` in R to run.
+Run `MAKEFILE.R` in R or Rscript to run.
 
-There is a large data processing step. If you want to skip this step (~30 minutes on my machine), there is a setting in the `MAKEFILE` - just set `quick <- TRUE`.
+There is a large data processing step. If you want to skip this step (~30 minutes on my machine), 
+there is a setting in the `MAKEFILE` - just set `quick <- TRUE`. This will prevent one of the intermediate
+data sets from being deleted.
 
-
-More instructions coming soon...
