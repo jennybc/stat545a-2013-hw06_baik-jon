@@ -6,7 +6,7 @@
 ##### How to run:
 
 Download a copy of this Github project.
-Run `MAKEFILE.R` in R or Rscript to run. This will:
+Run [`MAKEFILE.R`](MAKEFILE.R) in R or Rscript to run. This will:
  * Delete intermediate data sets and all figures
  * Run the data cleaning and data aggregation, creating some intermediate data sets (in [data_02_clean](data_02_clean/) and [data_03_maps](data_03_maps))
  * Generate figures for the report (in the [figures](figures/) folder)
