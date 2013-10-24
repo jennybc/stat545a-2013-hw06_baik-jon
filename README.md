@@ -1,5 +1,4 @@
-Parking Ticket Data Analysis for Vancouver, B.C.
-===========================
+## Parking Ticket Data Analysis for Vancouver, B.C.
 
 #### stat545a-2013-hw06_baik-jon
 
