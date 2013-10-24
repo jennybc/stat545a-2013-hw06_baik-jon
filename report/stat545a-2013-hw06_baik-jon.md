@@ -2,7 +2,7 @@ Avoiding Parking Tickets in Vancouver, B.C.
 ========================================================
 ### Jonathan Baik
 ### STAT 545A Homework 6
-### Oct 22 2013 1:21:56 AM
+### Oct 23 2013 11:27:30 PM
 <hr>
 
 > All the data and code for this project is on my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon). All plots in `png` format can be found in my [imgur gallery](http://imgur.com/a/kch1b).
@@ -18,6 +18,9 @@ Avoiding Parking Tickets in Vancouver, B.C.
   
 2013-10-22 01:00 AM:
   Added maps and conclusions. Updated MAKEFILE.R
+  
+2013-10-23 11:30 PM:
+  Fixed typos, bad grammar, bad spelling, etc. Clarified some points. Added a table describing variables in data set.
 ```
 
 ## Contents
@@ -44,18 +47,22 @@ I chose this data set because I wanted to delve into some local data that might 
 
 ## Data Cleaning
 
-The data set extracted from David Grant's data base dump was already quite clean. We load the data and check its dimensions and structure to verify that nothing went horribly wrong. Note that due to the size of the data, I saved a `rds` binary copy of the data set.
+The data set extracted from David Grant's database dump was already quite clean.  We load the data and check its dimensions and structure to verify that nothing went horribly wrong (output not shown). Note that I took the liberty of converting the relevant table in the MYSQL data base into a `csv` file. The file is quite large, so I provide an `rds` binary copy of the data set in my [Github](https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon).
 
 
 ```r
 # Read in the data
 ptDat <- readRDS("../data_01_raw/parkingtickets.rds")
+# Check dimensions
+dim(ptDat)
+# Check structure
+str(ptDat)
 ```
 
 
-We have 1.6 million rows and 15 columns. We go through some additional cleaning steps before we begin our analysis:
+We have approximately 1.6 million rows and 15 columns. We go through some additional cleaning steps before we begin our analysis:
 
-1. Drop unneeded variables (e.g. variables full of `NA`s)
+1. Drop unneeded variables (e.g. variables full of only `NA`s)
 2. Convert the variables to useful types that are easy to work with in `R` (e.g. `POSIX` date variables, set time zones, convert to factors, etc.)
 3. Create extra variables that might be helpful during data aggregation/analysis (e.g. separate variables for `year`, `month`, `day`, `hour`, etc.)
 4. Order factor levels
@@ -116,14 +123,36 @@ names(ptDat)
 ```
 
 
+Here is a table describing the variables in the data set.
+
+Variable Name | Description
+--------------|------------
+`datetime` | The date, including the time (year, month, day, hour, minute)
+`date` | The date (year, month, day)
+`time` | The time (hour, minute)
+`plate` | The license plate of ticketed vehicle
+`make_denorm` | The make of the vehicle (e.g. HONDA, TOYOTA, etc)
+`address` | The address where the vehicle was ticketed (e.g. 1050 Robson St.)
+`street_num` | The street number (e.g. 1050)
+`street_name` | The street name (e.g. Robson St.)
+`offence_denorm` | The parking violation name (e.g. Expired Meter)
+`make_denorm2` | Modified `make_denorm`, where low frequency makes are binned into "Other" group
+`year` | The year
+`month` | The month
+`day` | The day
+`wday` | The day of the week (e.g. Monday, Tuesday, etc)
+`hour` | The hour
+`holiday` | Indiciator for holiday
+`holiday_name` | Holiday name
+
 ## Different Types of Parking Offenses
 
-We begin the data analysis by first examining the different types of parking tickets and the frequency of such tickets. It is of interest to know what kind of behaviours to avoid when parking your car in Vancouver.
+We begin the data analysis by first examining the different types of parking tickets in the data set and the frequency of each offence. It is of interest to know what kind of bad parking behaviours are most frequent.
 
 <img src="../figures/01_offence-freq.svg"  style="width: 1000px;"/>
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Tue Oct 22 01:22:00 2013 -->
+<!-- Wed Oct 23 23:27:34 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> Count </TH> <TH> Proportion </TH>  </TR>
   <TR> <TD align="right"> Expired Meter </TD> <TD align="right"> 737313 </TD> <TD align="right"> 0.4520 </TD> </TR>
@@ -145,13 +174,13 @@ We begin the data analysis by first examining the different types of parking tic
    </TABLE>
 
 
-It seems the number one reason for receiving parking tickets in Vancouver is from expired parking meters. The next two most common reasons for receiving a parking tickets seem to arise from drivers wanting to avoid parking meters all together. Drivers that park their cars in a "No Stopping Zone" and drivers that parked in other people's permit/residential accounted for more than a quarter of the parking tickets in the data set. I guess that goes to show that you should always be mindful of how much money you put into the meter, and if you run out of change, you best not push your luck!
+It seems the number one reason for receiving parking tickets in Vancouver is from expired parking meters. The next two most common reasons for receiving a parking tickets seem to arise from drivers wanting to avoid parking meters all together. Drivers that park their cars in a "No Stopping Zone" and drivers that parked in other people's permit/residential accounted for more than a quarter of the parking tickets in the data set. I guess that goes to show that you should always be mindful of how much money you put into the meter, and if you run out of change, you best not push your luck by not adding more time.
 
 Let's check out the frequency of each othe offences by month over the time period of our data.
 
 <img src="../figures/01_offence-freq-byYM.svg"  style="width: 1000px;"/>
 
-It appears that the monthly number of tickets issued for each offence is quite stable. There is no immediate trend present in the plot. However, we see some unusual activity around August, 2007 there is a sharp decline in the number of tickets issued in Vancouver, but quickly recovers to "normal" levels in a couple of months. I wonder if there was a strike during that time period?
+It appears that the monthly number of tickets issued for each offence is quite stable. There is no immediate trend present in the plot. However, we see some unusual activity around August, 2007, where there is a sharp decline in the number of tickets issued in Vancouver. However, the number of issued parking tickets quickly recovers to "normal" levels in a couple of months. It is unknown what caused this to occur - maybe it is a data quality issue?
 
 ## Types of Cars that Were Ticketed
 
@@ -161,7 +190,7 @@ Now we focus our attention to the cars! We have information about the make (i.e.
 
 There are 115 different makes of vehicles recorded in the data set, so we do not include a table of counts with this figure. Note that in the above figure, we group some of the 115 makes of cars into a category labelled `Other` to keep the figure readable.
 
-Not much can be said relating to parking tickets from this plot per se. We are most likely seeing which cars are most common in Vancouver from our preceding figure. In the recording period of our data set, it was probably the case that the most common cars in Vancouver were Hondas, Toyotas and Fords. It is probably not the case that roadside deviants are more likely to drive Toyotas, Hondas and Fords. In any case, we cannot say with our figure.
+Not much can be said relating to parking tickets from this plot per se. We are most likely seeing which cars are most common in Vancouver from our preceding figure. In the recording period of our data set, it was probably the case that the most common cars in Vancouver were Hondas, Toyotas and Fords. It is probably not the case that roadside deviants are more likely to drive Toyotas, Hondas and Fords. In any case, we cannot say much with our figure.
 
 We can try to see if there are any noticeable differences in parking habits for people who drive different makes of cars by colouring the above plot by the ticket type.
 
@@ -171,7 +200,7 @@ It is hard to tell whether drivers of a certain car type are more likely to comm
 
 <img src="../figures/03_make-perc-colOffence.svg"  style="width: 1000px;"/>
 
-If we take a quick look at this figure, the "Expired Meter" offence seems to be the most likely reason for receiving a parking ticket. But if we look a little closer, we see a handful of cars that have a relatively larger proportion of parking tickets received due to parking in "No Stopping" zones. These cars are usually unknown or unbranded types of cars (e.g. UNMARKED, UNLISTED, INTERNATIONAL, etc.), or some build of car that I am not familiar with (e.g. FREGHTLINER, HINO, KENWORTH, etc.). I hypothesize that very important visitors, such as diplomats or VIPs with chauffeurs, are the the types of people who drive (or are driven in) these types of unmarked cars. Another interesting make of car is the UTILITY vehicle. Drivers that drive UTILITY vehicles seem to receive many "OTHER" parking tickets. One can only guess what this means. Maybe drivers of UTILITY vehicles like to break things as they park their giant cars?
+If we take a quick look at this figure, the "Expired Meter" offence seems to be the most likely reason for receiving a parking ticket. But if we look a little closer, we see a handful of cars that have a relatively larger proportion of parking tickets received due to parking in "No Stopping" zones. These cars are usually unknown or unbranded types of cars (e.g. UNMARKED, UNLISTED, INTERNATIONAL, etc.), or some build of car that I am not familiar with (e.g. FREGHTLINER, HINO, KENWORTH, etc.). I hypothesize that very important visitors, such as diplomats or VIPs with chauffeurs, are the the types of people who drive (or are driven in) these types of unmarked cars. Another interesting make of car is the UTILITY vehicle. Drivers that drive UTILITY vehicles seem to receive many "OTHER" parking tickets. One can only guess what this means. Maybe drivers of UTILITY vehicles like to break things as they park their giant cars, warranting an uncategorized parking ticket?
 
 ## When to Avoid Parking in Vancouver
 
@@ -181,7 +210,7 @@ We first take a broad look at the data. We Look at the yearly totals:
 
 <img src="../figures/04_year-totals.svg"  style="width: 500px;"/>
 
-It looks like the number of parking tickets given out peaked in 2005 and then experienced a steady decline up to 2008. However, this is a little misleading, since the data ranges from January 1, 2004 to September 25, 2008. During the final year of our data set, we have 3 fewer months of data compared to the other years. Also, as we will see in our next few plots, there is something strange with the data in 2007.
+It looks like the number of parking tickets given out peaked in 2005 and then experienced a steady decline up to 2008. However, this is a little misleading, since the data ranges from January 1, 2004 to September 25, 2008. During the final year of our data set, we have 3 fewer months of data compared to the other years. Also, as we saw before and will see in our next few plots, there is something strange with the data in 2007.
 
 Let us take a look at the monthly totals for the range of our data set. We display the same data with bar plots and with a line chart.
 
@@ -199,13 +228,13 @@ However, if we correct for the fact that we do not have data for October, Novemb
 
 <img src="../figures/04_month-avg.svg" style="width: 500px;"/>
 
-Now it appears that November is the riskiest month to park illegally. In fact, July, August and September are probably not good months to park either due to that anomoly observed in 2007. 
+Now it appears that November is the riskiest month to park illegally. In fact, July, August and September are probably not good months to park either due to that anomaly observed in 2007. 
 
-However, there may still be a ray of hope for the reader looking to park for free (albeit wrongfully) at the meter. If we take a look at parking tickets by days of the week and by holidays, we can see that parking enforcement officers may be more strict on some days than others. Let us take a look at the overall parking ticket count by day of the week.
+However, there may still be a ray of hope for those looking to park for free (albeit wrongfully) at the meter. If we take a look at parking tickets by days of the week and by holidays, we can see that parking enforcement officers may be more strict on some days than others. Let us take a look at the overall parking ticket count by day of the week.
 
 <img src="../figures/05_weekday-bar.svg" style="width: 500px;"/>
 
-Sunday experiences the lowest number of parking tickets handed out, followed by Saturday. Then we see a unimodal-like distribution of parking tickets handed out during Monday to Friday, peaking on Wednesday (maybe parking officers are grumpy on hump day?). The low number of tickets on Sunday and Saturday is probably due to weekend parking rules where some areas are free to park only on weekends. In addition, some meters in some locations may be free to park on weekends, and there may be fewer parking officers working during the weekends.
+Sunday experiences the lowest number of parking tickets being handed out, followed by Saturday. Then we see a unimodal-like distribution of parking tickets handed out during Monday to Friday, peaking on Wednesday (maybe parking officers are grumpy on hump day?). The low number of tickets on Sunday and Saturday is probably due to weekend parking rules where some areas are free to park only on weekends. In addition, some meters in some locations may be free to park on weekends, and there may be fewer parking officers working during the weekends.
 
 Let us take a look at the proportion of tickets given on each day of the week facetted by offence. It will be apparent that the distributions are roughly similar. It seems that Sunday is the best time to go out and park in Vancouver with the least worry of parking receiving parking tickets (except maybe for your expired meter).
 
@@ -227,7 +256,7 @@ Now, we take a look at the proportion of tickets given out during a specific tim
 
 > Sorry for the rotated x-axis labels. The labels would overlap otherwise!
 
-We zoom in to the "No Stopping" plot from the above plot.
+We zoom in to the "No Stopping" plot from the above plot to get a better look.
 
 <img src="../figures/10_hour-offenses-noStop.svg" style="width: 800px;"/>
 
@@ -235,9 +264,9 @@ Next, we look at parking during the holidays!
 
 ## Aren't the Holidays Nice?
 
-Next we will check the parking tickets data during the holidays. We consider the [9 statutory holidays we have in B.C.](http://www.labour.gov.bc.ca/esb/facshts/stats.htm): New Year's, Good Friday, Victoria Day, Canada Day, B.C. Day, Labour Day, Thanksgiving Day, Remembrance Day, and Christmas Day (this data was before the creation of Family Day).
+We will check the parking tickets data during the holidays. We consider the [9 statutory holidays we have in B.C.](http://www.labour.gov.bc.ca/esb/facshts/stats.htm): New Year's, Good Friday, Victoria Day, Canada Day, B.C. Day, Labour Day, Thanksgiving Day, Remembrance Day, and Christmas Day (this data was before the creation of Family Day).
 
-Presumably, people have more time to drive around during the holidays. Will we see fewer, or more parking violations during the holidays? We can see the number of parking tickets given during each holday in the range of the data set. To have a point of comparison, we also plot the overall mean daily number of parking tickets (black), the weekday mean number (blue), and the weekend mean number (red).
+I assume that people have more time to drive around and visit parts of Vancouver during the holidays. Will we see fewer, or more parking violations during the holidays? We can see the number of parking tickets given during each holday in the range of the data set. To have a point of comparison, we also plot the overall mean daily number of parking tickets (black), the weekday mean number (blue), and the weekend mean number (red).
 
 <img src="../figures/08_holiday-vs-avgs.svg" style="width: 800px;"/>
 
@@ -247,14 +276,14 @@ It seems that during statutory holidays, we experience fewer parking tickets, be
 
 As they say, "Catch me once, shame on you... catch me twice, shame on me". A parking fine is supposed to be a deterrent that stops people from parking illegally. Apparently, this is not effective for some people.
 
-If we take a histogram of the number of parking tickets issued to each license plate in the data base, we see a highly skewed distribution, where most of the mass is on 1. The fast majority of license plates in the data set have only 1 parking ticket associated with it.
+If we take a histogram of the number of parking tickets issued to each license plate in the data base, we see a highly skewed distribution, where most of the mass is on 1. The vast majority of license plates in the data set have only 1 parking ticket associated with it.
 
 <img src="../figures/09_plate-totals.svg" style="width: 800px;"/>
 
 The keen observer will notice that only 99.689% of the data is displayed in the histogram. What happened to the remaining 0.302% of the data? We show the top 25 offenders in the table below.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Tue Oct 22 01:22:01 2013 -->
+<!-- Wed Oct 23 23:27:35 2013 -->
 <TABLE border=1>
 <TR> <TH> Plate </TH> <TH> Make </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 0287GE </TD> <TD> INTERNATIONAL </TD> <TD align="right"> 362 </TD> </TR>
@@ -285,14 +314,14 @@ The keen observer will notice that only 99.689% of the data is displayed in the 
    </TABLE>
 
 
-There is a handful of people who accrue a lot of fines from parking tickets. If a parking ticket were $30, these owners would be paying in excess of $3000 in just parking tickets! However, if we shift through the data, we have a number of cars (>1000) with license plates marked as "INCMPT" - probably meaning "Incompatible" or "Incomplete". These may be foreign cars or cars with custom license plates that cannot be enterd into the system properly.
+There is a handful of people who accrue a lot of fines from parking tickets. If a parking ticket were $35 (the usual amount, if you pay the fine early), these owners would be paying in excess of $3500 in just parking tickets! However, if we shift through the data, we have a number of cars (>1000) with license plates marked as "INCMPT" - probably meaning "Incompatible" or "Incomplete". These may be foreign cars or cars with custom license plates that cannot be enterd into the system properly.
 
 ## Most Ticketed Locations
 
-Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver.
+Finally, we will check which areas receive the largest number of parking tickets in the City of Vancouver. Looking through the data set, it appears that the address variable is accurate to a 100 block. In other words, all parking tickets issued on 1000 Robson St. to 1100 Robson street will marked as 1050 Robson St. in the data. We display the top 25 worst places to park in Vancouver in a table.
 
 <!-- html table generated in R 3.0.2 by xtable 1.7-1 package -->
-<!-- Tue Oct 22 01:22:01 2013 -->
+<!-- Wed Oct 23 23:27:35 2013 -->
 <TABLE border=1>
 <TR> <TH> Address </TH> <TH> No. Tickets </TH>  </TR>
   <TR> <TD> 1050 Robson St. </TD> <TD align="right"> 17899 </TD> </TR>
@@ -326,14 +355,14 @@ Finally, we will check which areas receive the largest number of parking tickets
 It looks like Downtown Vancouver, and parts of Broadway St. are the hottest places to be for parking enforcement officers! Let us take a look on the map where these are:
 
 <!-- Map generated in R 3.0.2 by googleVis 0.4.5 package -->
-<!-- Tue Oct 22 01:22:01 2013 -->
+<!-- Wed Oct 23 23:27:35 2013 -->
 
 
 <!-- jsHeader -->
 <script type="text/javascript">
  
 // jsData 
-function gvisDataMapID29c0783d4f81 () {
+function gvisDataMapIDf747b956a31 () {
 var data = new google.visualization.DataTable();
 var datajson =
 [
@@ -471,8 +500,8 @@ return(data);
 }
  
 // jsDrawChart
-function drawChartMapID29c0783d4f81() {
-var data = gvisDataMapID29c0783d4f81();
+function drawChartMapIDf747b956a31() {
+var data = gvisDataMapIDf747b956a31();
 var options = {};
 options["showTip"] = true;
 options["showLine"] = false;
@@ -481,7 +510,7 @@ options["mapType"] = "normal";
 options["useMapTypeControl"] = true;
 
     var chart = new google.visualization.Map(
-    document.getElementById('MapID29c0783d4f81')
+    document.getElementById('MapIDf747b956a31')
     );
     chart.draw(data,options);
     
@@ -505,9 +534,9 @@ if (newPackage)
   pkgs.push(chartid);
   
 // Add the drawChart function to the global list of callbacks
-callbacks.push(drawChartMapID29c0783d4f81);
+callbacks.push(drawChartMapIDf747b956a31);
 })();
-function displayChartMapID29c0783d4f81() {
+function displayChartMapIDf747b956a31() {
   var pkgs = window.__gvisPackages = window.__gvisPackages || [];
   var callbacks = window.__gvisCallbacks = window.__gvisCallbacks || [];
   window.clearTimeout(window.__gvisLoad);
@@ -531,14 +560,16 @@ callbacks.shift()();
 </script>
  
 <!-- jsChart -->  
-<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapID29c0783d4f81"></script>
+<script type="text/javascript" src="https://www.google.com/jsapi?callback=displayChartMapIDf747b956a31"></script>
  
 <!-- divChart -->
   
-<div id="MapID29c0783d4f81"
+<div id="MapIDf747b956a31"
   style="width: 600px; height: 500px;">
 </div>
 
+
+> This map is scrollable, and you can click on the tool tips for more information.
 
 We will look at the big picture. Where are the most parking tickets handed out? We overlay a hexbin plot over a static map of the City of Vancouver. The areas with high frequency of parking tickets handed out are highlighted in red, while low frequency areas are coloured in black.
 
@@ -556,7 +587,7 @@ Interestingly, the spatial distributions of the different parking offences diffe
 
 ## Conclusions
 
-I had a lot of fun working with the Vancouver parking tickets data set. This data set was much larger than I was used to dealing with in R, and that presented several challenges, such as efficiently aggregating the data for visualizing, and plotting large amounts of data. It was unfortunate that there were no truly quantitative variables in the data set. On the plus side, there was a spatial aspect to the data set, and I was able to get my hands dirty plotting maps. If I had more time, I would investigate some quantitative variables that might be linked to the data, such as the fine amount associated with each parking ticket, and also try to visualize any spatio-temporal trends that may be present.
+I had a lot of fun working with the Vancouver parking tickets data set. This data set was much larger than I was used to dealing with in R, and that presented several challenges, such as efficiently aggregating the data for visualizing, and plotting large amounts of data. It was unfortunate that there were no truly quantitative variables in the data set. On the plus side, there was a spatial aspect to the data set, and I was able to get my hands dirty plotting maps. If I had more time, I would investigate some quantitative variables that might be linked to the data, such as the fine amount associated with each parking ticket, and also try to visualize any spatio-temporal trends that may be present. I also want to spend more time plotting on maps.
 
 The greatest lesson that I learned from this project is that cleaning the data and reading in the data for analysis is the most time consuming step. I underestimated the time that it would take to get to actually start plotting the data due to concerns of data quality, converting different file formats, etc. Note to self: start projects earlier!
 

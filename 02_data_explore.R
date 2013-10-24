@@ -1,13 +1,3 @@
-#####
-# We need to get an idea of the data before we continue. This script will not
-# be automatically run, as this is for myself, and not for the report.
-# This script is for me to peer into the data and explore some ideas, as well as
-# formulate hypotheses about the data. The report will contain the "best" or
-# most interesting ideas, probably stemming from exploring in this script.
-# In short, this is my test file!
-#####
-
-
 # Set up ------------------------------------------------------------------
 
 # For working with dates
