@@ -44,8 +44,8 @@ ptDat <- readRDS("data_02_clean/parkingtickets_clean.rds")
 
 # For saving image files
 ggsave2 <- function(name, plot, width, height) {
-  ggsave(filename=paste0("figures/", name, ".svg"), plot=plot,
-         width=width, height=height)
+  #ggsave(filename=paste0("figures/", name, ".svg"), plot=plot,
+  #       width=width, height=height)
   ggsave(filename=paste0("figures/", name, ".png"), plot=plot,
          width=width, height=height)
 }
