@@ -13,12 +13,15 @@ quick <- TRUE # quick <- FALSE  will delete all intermediate
 # The make file
 
 # The outputs
-outputs <- c(dir("data_02_clean"),
-             dir("figures"))
+outputs <- c(list.files("data_02_clean", full.names = TRUE),
+             list.files("figures", full.names = TRUE))
 # data_03_maps is also raw data!
 if(quick) {
-  outputs <- outputs[!outputs %in% c("ptDatPlateSum.rds", "ptDatPlateSum.csv",
-                                     "ptDatPlateSumMake.rds", "ptDatPlateSumMake.csv")]
+  retainForQuickRun <- c("data_02_clean/ptDatPlateSum.rds",
+                         "data_02_clean/ptDatPlateSum.csv",
+                         "data_02_clean/ptDatPlateSumMake.csv",
+                         "data_02_clean/ptDatPlateSumMake.rds")
+  outputs <- outputs[!(outputs %in% retainForQuickRun)]
 }
 
 # Remove files
