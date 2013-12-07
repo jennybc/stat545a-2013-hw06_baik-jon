@@ -4,7 +4,7 @@
 
 The [report published to RPubs](http://rpubs.com/jonnybaik/stat545a-2013-hw06_baik-jon)
 
-The [report as appears in github repo](http://htmlpreview.github.com/?https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon/blob/master/report/stat545a-2013-hw06_baik-jon.html)
+The [report as appears in github repo](http://htmlpreview.github.com/?https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon/blob/master/report/stat545a-2013-hw06_baik-jon.html) *this does not seem to work ... possibly because the HTML file is too large? this strategy certainly works elsewhere*
 
 #### stat545a-2013-hw06_baik-jon
 
