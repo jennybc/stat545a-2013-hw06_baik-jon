@@ -1,5 +1,11 @@
 ## Parking Ticket Data Analysis for Vancouver, B.C.
 
+#### Helpful links
+
+The [report published to RPubs](http://rpubs.com/jonnybaik/stat545a-2013-hw06_baik-jon)
+
+The [report as appears in github repo](http://htmlpreview.github.com/?https://github.com/jonnybaik/stat545a-2013-hw06_baik-jon/blob/master/report/stat545a-2013-hw06_baik-jon.html)
+
 #### stat545a-2013-hw06_baik-jon
 
 
