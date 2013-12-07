@@ -177,7 +177,7 @@ Let us take a look at the monthly totals for the range of our data set. We displ
 
 The bar plots and the line charts show the same picture. We focus on the line chart. We seem to be seeing around 30000 parking tickets per month, with some random(?) peaks and troughs (which are exaggerated in the line chart due to the y axis starting at 10000), but suddenly see a great drop in the number of parking tickets issued in 2007 starting in July and lasting until around October before reaching "normal" levels again in November of that year. Doing a quick search in Google did not yield any ideas as to why this occurred. Maybe the appointment of the new police chief, Jim Chu, reminded everyone to follow the law more closely during these months (though, probably not). It would be interesting to find what caused this to occur.
 
-Now we look at which months experienced the larged number of parking tickets in our data set. If we take a look at monthly totals, it appears that May is the worst time to risk a parking infraction, while October seems to be a good time to park without putting money in the parking meter.
+Now we look at which months experienced the largest number of parking tickets in our data set. If we take a look at monthly totals, it appears that May is the worst time to risk a parking infraction, while October seems to be a good time to park without putting money in the parking meter.
 
 <img src="../figures/04_month-totals.svg" style="width: 500px;"/>
 
@@ -221,7 +221,7 @@ Next, we look at parking during the holidays!
 
 ## Aren't the Holidays Nice?
 
-We will check the parking tickets data during the holidays. We consider the [9 statutory holidays we have in B.C.](http://www.labour.gov.bc.ca/esb/facshts/stats.htm): New Year's, Good Friday, Victoria Day, Canada Day, B.C. Day, Labour Day, Thanksgiving Day, Remembrance Day, and Christmas Day (this data was before the creation of Family Day).
+We will check the parking ticket data during the holidays. We consider the [9 statutory holidays we have in B.C.](http://www.labour.gov.bc.ca/esb/facshts/stats.htm): New Year's, Good Friday, Victoria Day, Canada Day, B.C. Day, Labour Day, Thanksgiving Day, Remembrance Day, and Christmas Day (this data was before the creation of Family Day).
 
 I assume that people have more time to drive around and visit parts of Vancouver during the holidays. Will we see fewer, or more parking violations during the holidays? We can see the number of parking tickets given during each holday in the range of the data set. To have a point of comparison, we also plot the overall mean daily number of parking tickets (black), the weekday mean number (blue), and the weekend mean number (red).
 
@@ -257,7 +257,7 @@ digits(tab2x) <- c(0, 0, 0, 0)
 print.xtable(tab2x, type="html", include.rownames=FALSE)
 ```
 
-There is a handful of people who accrue a lot of fines from parking tickets. If a parking ticket were $35 (the usual amount, if you pay the fine early), these owners would be paying in excess of $3500 in just parking tickets! However, if we shift through the data, we have a number of cars (>1000) with license plates marked as "INCMPT" - probably meaning "Incompatible" or "Incomplete". These may be foreign cars or cars with custom license plates that cannot be enterd into the system properly.
+There is a handful of people who accrue a lot of fines from parking tickets. If a parking ticket were $35 (the usual amount, if you pay the fine early), these owners would be paying in excess of $3500 in just parking tickets! However, if we sift through the data, we have a number of cars (>1000) with license plates marked as "INCMPT" - probably meaning "Incompatible" or "Incomplete". These may be foreign cars or cars with custom license plates that cannot be entered into the system properly.
 
 ## Most Ticketed Locations
 
